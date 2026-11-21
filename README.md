@@ -1,2 +1,12 @@
-# Vlog-spark-ai-creater-
-VlogSpark AI is an AI-powered content creation platform that transforms simple ideas and titles into engaging, natural-sounding video scripts and ready-to-create videos. Generate creative content, voiceovers, and videos in multiple Indian languages for YouTube, Instagram, and other social media platforms — all in one place.
+# VlogSpark AI
+
+Your Personal AI Content Director — From One Idea to a Complete Video.
+
+## Files Included
+- `index.html`: Upgraded VlogSpark AI web app (ready for GitHub Pages)
+- `portfolio.html` & `portfolio_index.pdf`: Personal portfolio page and printable PDF
+- `vlogspark_backend/`: FastAPI + Gemini API server-side backend
+
+## Quick Deploy (GitHub Pages)
+1. Push this folder to your `main` branch.
+2. Go to **Settings → Pages**, select **Deploy from a branch**, and choose `main` / `/ (root)`.

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Santhosh — Portfolio</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #ffffff !important; color: #0f172a !important; }
+      .print-card { border: 1px solid #cbd5e1 !important; background: #ffffff !important; color: #0f172a !important; box-shadow: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased">
+
+  <!-- Top Navbar -->
+  <header class="no-print sticky top-0 z-40 bg-slate-950/85 backdrop-blur border-b border-white/10">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+      <a href="#top" class="font-bold text-lg tracking-tight text-white">Santhosh</a>
+      <nav class="hidden sm:flex items-center gap-6 text-sm text-slate-300">
+        <a href="#about" class="hover:text-white transition-colors">About</a>
+        <a href="#projects" class="hover:text-white transition-colors">Projects</a>
+        <a href="#skills" class="hover:text-white transition-colors">Skills</a>
+        <a href="#contact" class="hover:text-white transition-colors">Contact</a>
+      </nav>
+      <button type="button" id="print-pdf-btn" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white flex items-center gap-1.5 transition-colors">
+        <i data-lucide="printer" class="w-4 h-4"></i>
+        <span>Print / Save PDF</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top" class="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-16 space-y-16">
+
+    <!-- Hero -->
+    <section id="about" class="space-y-4">
+      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/15 text-blue-300 border border-blue-400/30">
+        [Your Role / Title — e.g., Full-Stack Developer &amp; AI Builder]
+      </span>
+      <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
+        Hi, I'm Santhosh.
+      </h1>
+      <p class="text-base sm:text-lg text-slate-300 max-w-2xl leading-relaxed">
+        [Short 2–3 sentence bio about what you build, the problems you enjoy solving, and your current focus—such as AI web apps, creator tools, and responsive frontend engineering.]
+      </p>
+      <div class="pt-2 flex flex-wrap gap-3 text-sm">
+        <a href="#projects" class="px-5 py-2.5 rounded-xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500 transition-all">View Projects</a>
+        <a href="#contact" class="px-5 py-2.5 rounded-xl font-semibold bg-white/10 text-white hover:bg-white/15 border border-white/15 transition-colors">Contact Me</a>
+      </div>
+    </section>
+
+    <!-- Projects -->
+    <section id="projects" class="space-y-6">
+      <div class="flex items-center justify-between gap-4">
+        <h2 class="text-2xl font-bold text-white">Featured Projects</h2>
+        <div class="no-print flex gap-2 text-xs">
+          <button type="button" data-filter="All" class="proj-filter-btn px-3 py-1.5 rounded-lg bg-blue-600 text-white font-semibold">All</button>
+          <button type="button" data-filter="AI" class="proj-filter-btn px-3 py-1.5 rounded-lg bg-white/10 text-slate-300 hover:text-white font-semibold">AI</button>
+          <button type="button" data-filter="Web" class="proj-filter-btn px-3 py-1.5 rounded-lg bg-white/10 text-slate-300 hover:text-white font-semibold">Web</button>
+        </div>
+      </div>
+
+      <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <article data-cat="AI" class="project-card print-card bg-slate-900 border border-white/10 rounded-2xl p-6 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300">AI SaaS</span>
+            <span class="text-xs text-slate-400">2026</span>
+          </div>
+          <h3 class="text-lg font-bold text-white">VlogSpark AI</h3>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            AI-powered video content director that turns a single title or prompt into natural human-style scripts, speaking cues, scene-by-scene camera plans, and multilingual production guides.
+          </p>
+          <div class="flex flex-wrap gap-1.5 text-xs text-slate-400">
+            <span class="px-2 py-0.5 rounded bg-white/5">HTML / Tailwind</span>
+            <span class="px-2 py-0.5 rounded bg-white/5">FastAPI</span>
+            <span class="px-2 py-0.5 rounded bg-white/5">Gemini API</span>
+          </div>
+        </article>
+
+        <article data-cat="Web" class="project-card print-card bg-slate-900 border border-white/10 rounded-2xl p-6 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300">Web App</span>
+            <span class="text-xs text-slate-400">[Year]</span>
+          </div>
+          <h3 class="text-lg font-bold text-white">[Project Title 2]</h3>
+          <p class="text-sm text-slate-300 leading-relaxed">
+            [Brief description of your second project, what problem it solves, and the key outcome or features.]
+          </p>
+          <div class="flex flex-wrap gap-1.5 text-xs text-slate-400">
+            <span class="px-2 py-0.5 rounded bg-white/5">[Tech 1]</span>
+            <span class="px-2 py-0.5 rounded bg-white/5">[Tech 2]</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Skills -->
+    <section id="skills" class="space-y-4">
+      <h2 class="text-2xl font-bold text-white">Skills &amp; Tools</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="print-card bg-slate-900 border border-white/10 rounded-2xl p-5">
+          <h3 class="text-sm font-bold text-blue-300 uppercase tracking-wider">Frontend</h3>
+          <p class="mt-2 text-sm text-slate-300">HTML5, CSS3, Tailwind CSS, JavaScript, React, TypeScript</p>
+        </div>
+        <div class="print-card bg-slate-900 border border-white/10 rounded-2xl p-5">
+          <h3 class="text-sm font-bold text-purple-300 uppercase tracking-wider">Backend &amp; AI</h3>
+          <p class="mt-2 text-sm text-slate-300">Python, FastAPI, Gemini API, REST APIs, PostgreSQL</p>
+        </div>
+        <div class="print-card bg-slate-900 border border-white/10 rounded-2xl p-5">
+          <h3 class="text-sm font-bold text-emerald-300 uppercase tracking-wider">Hosting &amp; Tools</h3>
+          <p class="mt-2 text-sm text-slate-300">Firebase Hosting, Git, GitHub, FFmpeg, Figma</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="print-card bg-slate-900 border border-white/10 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <h2 class="text-xl font-bold text-white">Get in Touch</h2>
+        <p class="mt-1 text-sm text-slate-300">Email: santhoshthiyyari@gmail.com • Location: Tirupati, India</p>
+      </div>
+      <div class="no-print flex flex-wrap gap-2">
+        <button type="button" id="copy-email-btn" class="px-4 py-2 rounded-xl text-xs font-semibold bg-white/10 hover:bg-white/15 text-white border border-white/15">Copy Email</button>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    (function () {
+      'use strict';
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons();
+      }
+      document.getElementById('print-pdf-btn').addEventListener('click', () => {
+        window.print();
+      });
+      document.querySelectorAll('.proj-filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const f = btn.getAttribute('data-filter');
+          document.querySelectorAll('.proj-filter-btn').forEach(b => {
+            b.className = b === btn
+              ? 'proj-filter-btn px-3 py-1.5 rounded-lg bg-blue-600 text-white font-semibold'
+              : 'proj-filter-btn px-3 py-1.5 rounded-lg bg-white/10 text-slate-300 hover:text-white font-semibold';
+          });
+          document.querySelectorAll('.project-card').forEach(card => {
+            const match = f === 'All' || card.getAttribute('data-cat') === f;
+            card.classList.toggle('hidden', !match);
+          });
+        });
+      });
+      document.getElementById('copy-email-btn').addEventListener('click', () => {
+        const email = 'santhoshthiyyari@gmail.com';
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(email).catch(() => {});
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = email;
+          document.body.appendChild(ta);
+          ta.select();
+          try { document.execCommand('copy'); } catch (e) {}
+          ta.remove();
+        }
+        const btn = document.getElementById('copy-email-btn');
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = 'Copy Email'; }, 1800);
+      });
+    })();
+  </script>
+</body>
+</html>

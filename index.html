@@ -1,0 +1,2454 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VlogSpark AI — Your Personal AI Content Director</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: {
+              950: '#060914',
+              900: '#0B1120',
+              800: '#11192E',
+              700: '#1A2542',
+            },
+            brand: {
+              blue: '#2563EB',
+              sky: '#3B82F6',
+              purple: '#7C3AED',
+              violet: '#8B5CF6',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-up {
+      animation: fadeSlideUp 0.28s ease-out forwards;
+    }
+    .glass-nav {
+      background: rgba(6, 9, 20, 0.82);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .hero-glow {
+      background: radial-gradient(circle at 20% 20%, rgba(37, 99, 235, 0.22), transparent 45%),
+                  radial-gradient(circle at 80% 30%, rgba(124, 58, 237, 0.18), transparent 45%);
+    }
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.35); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.55); }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased selection:bg-blue-600 selection:text-white">
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- ==================== LANDING PAGE VIEW ==================== -->
+  <div id="landing-view" class="min-h-screen flex flex-col bg-navy-950 text-white">
+
+    <!-- Top Navigation -->
+    <header class="sticky top-0 z-40 glass-nav border-b border-white/10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+        <a href="#top" class="flex items-center gap-2.5 shrink-0 group">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
+            <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-lg tracking-tight text-white">VlogSpark <span class="text-blue-400">AI</span></span>
+            <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-purple-500/20 text-purple-300 border border-purple-400/30">Stage 1 Demo</span>
+          </div>
+        </a>
+
+        <!-- Desktop Nav Links -->
+        <nav class="hidden lg:flex items-center gap-6 text-sm font-medium text-slate-300">
+          <a href="#how-it-works" class="hover:text-white transition-colors">How It Works</a>
+          <a href="#features" class="hover:text-white transition-colors">Features</a>
+          <a href="#sample-plan" class="hover:text-white transition-colors">Sample Plan</a>
+          <a href="#languages" class="hover:text-white transition-colors">Languages</a>
+          <a href="#pricing" class="hover:text-white transition-colors">Pricing</a>
+          <a href="#faq" class="hover:text-white transition-colors">FAQ</a>
+        </nav>
+
+        <!-- Auth & Dashboard Actions -->
+        <div class="hidden md:flex items-center gap-2.5 shrink-0">
+          <button type="button" id="nav-login-btn" class="px-3.5 py-2 rounded-xl text-sm font-medium text-slate-200 hover:text-white hover:bg-white/10 transition-colors">
+            Log In
+          </button>
+          <button type="button" id="nav-signup-btn" class="px-3.5 py-2 rounded-xl text-sm font-medium bg-white/10 hover:bg-white/15 text-white border border-white/15 transition-colors">
+            Sign Up
+          </button>
+          <button type="button" id="nav-demo-btn" class="px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg shadow-blue-600/25 transition-all flex items-center gap-1.5">
+            <span>Open Demo App</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <button type="button" id="mobile-menu-btn" aria-label="Toggle navigation menu" class="lg:hidden p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/10">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+      </div>
+
+      <!-- Mobile Dropdown Menu -->
+      <div id="mobile-nav-drawer" class="hidden lg:hidden border-t border-white/10 bg-navy-900 px-4 py-4 space-y-3">
+        <div class="grid grid-cols-2 gap-2 text-sm font-medium text-slate-300">
+          <a href="#how-it-works" class="mobile-nav-link px-3 py-2 rounded-lg hover:bg-white/5 hover:text-white">How It Works</a>
+          <a href="#features" class="mobile-nav-link px-3 py-2 rounded-lg hover:bg-white/5 hover:text-white">Features</a>
+          <a href="#sample-plan" class="mobile-nav-link px-3 py-2 rounded-lg hover:bg-white/5 hover:text-white">Sample Plan</a>
+          <a href="#languages" class="mobile-nav-link px-3 py-2 rounded-lg hover:bg-white/5 hover:text-white">Languages</a>
+          <a href="#pricing" class="mobile-nav-link px-3 py-2 rounded-lg hover:bg-white/5 hover:text-white">Pricing</a>
+          <a href="#faq" class="mobile-nav-link px-3 py-2 rounded-lg hover:bg-white/5 hover:text-white">FAQ</a>
+        </div>
+        <div class="pt-2 border-t border-white/10 flex flex-wrap gap-2">
+          <button type="button" id="mobile-login-btn" class="flex-1 px-3 py-2.5 rounded-xl text-sm font-medium bg-white/10 text-white">Log In</button>
+          <button type="button" id="mobile-signup-btn" class="flex-1 px-3 py-2.5 rounded-xl text-sm font-medium bg-white/10 text-white">Sign Up</button>
+          <button type="button" id="mobile-demo-btn" class="w-full px-4 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 text-white">Open Demo Dashboard</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="top" class="relative overflow-hidden hero-glow pt-14 pb-20 sm:pt-20 sm:pb-28 border-b border-white/10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="max-w-3xl mx-auto text-center">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-500/15 border border-blue-400/30 text-blue-300 text-xs sm:text-sm font-medium mb-6">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Your Personal AI Content Director – From One Idea to a Complete Video</span>
+          </div>
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.12]">
+            Turn a simple thought into a
+            <span class="bg-gradient-to-r from-blue-400 via-sky-300 to-purple-400 bg-clip-text text-transparent">ready-to-shoot video plan</span>
+          </h1>
+          <p class="mt-5 text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl mx-auto">
+            Built for daily vloggers, students, YouTubers, Instagram creators, and businesses. Get natural dialogue, camera angles, speaking guidance, storyboards, and captions in 12 languages—without sounding robotic.
+          </p>
+        </div>
+
+        <!-- Interactive Hero Prompt Box -->
+        <div class="mt-10 max-w-3xl mx-auto">
+          <div class="bg-navy-800/90 border border-white/15 rounded-2xl p-3 sm:p-4 shadow-2xl shadow-blue-950/50">
+            <label for="hero-prompt-input" class="block text-xs font-semibold uppercase tracking-wider text-blue-300 mb-2 px-1">
+              Try a video idea (Stage 1 Interactive Demo)
+            </label>
+            <textarea id="hero-prompt-input" rows="2" class="w-full bg-navy-900/90 border border-white/10 rounded-xl px-4 py-3 text-sm sm:text-base text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none">I want to make a 30-second video about my first day at college. Make it interesting, emotional, natural, and relatable.</textarea>
+            <div class="mt-3 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+              <div class="flex flex-wrap items-center gap-2 text-xs text-slate-300">
+                <span class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10">Instagram Reels / Shorts</span>
+                <span class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10">30 sec</span>
+                <span class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10">12 Languages</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <button type="button" id="hero-view-sample-btn" class="px-4 py-2.5 rounded-xl text-sm font-medium bg-white/10 hover:bg-white/15 text-white transition-colors">
+                  Preview Sample Plan
+                </button>
+                <button type="button" id="hero-launch-btn" class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2">
+                  <span>Launch in Dashboard</span>
+                  <i data-lucide="sparkles" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <p class="text-center text-xs text-slate-400 mt-3">
+            No account required for Demo Mode. Stage 1 includes interactive landing page, dashboard navigation, and 3 sample projects.
+          </p>
+        </div>
+
+        <!-- Target Users Strip -->
+        <div class="mt-14 pt-8 border-t border-white/10">
+          <p class="text-center text-xs font-semibold uppercase tracking-widest text-slate-400 mb-4">
+            Designed for every creator &amp; team
+          </p>
+          <div class="flex flex-wrap justify-center gap-2 sm:gap-3 max-w-4xl mx-auto">
+            <span class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm bg-white/5 border border-white/10 text-slate-200">Daily Vloggers</span>
+            <span class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm bg-white/5 border border-white/10 text-slate-200">YouTube Creators</span>
+            <span class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm bg-white/5 border border-white/10 text-slate-200">Instagram Creators</span>
+            <span class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm bg-white/5 border border-white/10 text-slate-200">Students</span>
+            <span class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm bg-white/5 border border-white/10 text-slate-200">Beginners</span>
+            <span class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm bg-white/5 border border-white/10 text-slate-200">Business Owners</span>
+            <span class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm bg-white/5 border border-white/10 text-slate-200">Freelancers</span>
+            <span class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm bg-white/5 border border-white/10 text-slate-200">Educators</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Product Explanation & How It Works -->
+    <section id="how-it-works" class="py-16 sm:py-24 bg-navy-900 border-b border-white/10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-2xl">
+          <span class="text-xs font-semibold uppercase tracking-widest text-blue-400">How VlogSpark AI Works</span>
+          <h2 class="mt-2 text-3xl sm:text-4xl font-bold text-white">From one rough idea to a shoot-ready plan in four steps</h2>
+          <p class="mt-3 text-slate-300 text-base">
+            Most tools stop at a generic script. VlogSpark AI directs the whole shoot—what to say, how to say it, where to hold your phone, and how to edit it.
+          </p>
+        </div>
+
+        <div class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="bg-navy-800/80 border border-white/10 rounded-2xl p-6 hover:border-blue-500/40 transition-colors">
+            <div class="w-10 h-10 rounded-xl bg-blue-500/15 text-blue-400 flex items-center justify-center font-bold text-sm mb-4">01</div>
+            <h3 class="text-lg font-semibold text-white">Share Your Idea</h3>
+            <p class="mt-2 text-sm text-slate-300 leading-relaxed">Type a plain sentence about your day, product, or lesson. Pick platform, duration, mood, and language.</p>
+          </div>
+          <div class="bg-navy-800/80 border border-white/10 rounded-2xl p-6 hover:border-purple-500/40 transition-colors">
+            <div class="w-10 h-10 rounded-xl bg-purple-500/15 text-purple-400 flex items-center justify-center font-bold text-sm mb-4">02</div>
+            <h3 class="text-lg font-semibold text-white">Get Natural Dialogue</h3>
+            <p class="mt-2 text-sm text-slate-300 leading-relaxed">Receive conversational lines, speaking points, tone cues, and natural pauses—never stiff AI clichés.</p>
+          </div>
+          <div class="bg-navy-800/80 border border-white/10 rounded-2xl p-6 hover:border-blue-500/40 transition-colors">
+            <div class="w-10 h-10 rounded-xl bg-blue-500/15 text-blue-400 flex items-center justify-center font-bold text-sm mb-4">03</div>
+            <h3 class="text-lg font-semibold text-white">Shoot With Direction</h3>
+            <p class="mt-2 text-sm text-slate-300 leading-relaxed">Follow scene-by-scene camera angles, framing distances, lighting tips, and visual storyboards.</p>
+          </div>
+          <div class="bg-navy-800/80 border border-white/10 rounded-2xl p-6 hover:border-purple-500/40 transition-colors">
+            <div class="w-10 h-10 rounded-xl bg-purple-500/15 text-purple-400 flex items-center justify-center font-bold text-sm mb-4">04</div>
+            <h3 class="text-lg font-semibold text-white">Edit &amp; Publish</h3>
+            <p class="mt-2 text-sm text-slate-300 leading-relaxed">Match royalty-free music, generate multilingual subtitles, assemble clips, and copy platform-ready captions.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section id="features" class="py-16 sm:py-24 bg-navy-950 border-b border-white/10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto">
+          <span class="text-xs font-semibold uppercase tracking-widest text-purple-400">Complete Creator Suite</span>
+          <h2 class="mt-2 text-3xl sm:text-4xl font-bold text-white">Everything you need to plan, film, and polish</h2>
+          <p class="mt-3 text-slate-300 text-base">11 modular studio tools working together inside one clean workspace.</p>
+        </div>
+
+        <div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div class="bg-navy-900 border border-white/10 rounded-2xl p-6">
+            <div class="w-10 h-10 rounded-xl bg-blue-500/15 text-blue-400 flex items-center justify-center mb-4">
+              <i data-lucide="lightbulb" class="w-5 h-5"></i>
+            </div>
+            <h3 class="font-semibold text-white text-lg">AI Idea Generator</h3>
+            <p class="mt-2 text-sm text-slate-300">Filter by 14 categories—from College Life and Travel to Tech &amp; Tutorials—to spark original concepts.</p>
+          </div>
+          <div class="bg-navy-900 border border-white/10 rounded-2xl p-6">
+            <div class="w-10 h-10 rounded-xl bg-purple-500/15 text-purple-400 flex items-center justify-center mb-4">
+              <i data-lucide="message-square-quote" class="w-5 h-5"></i>
+            </div>
+            <h3 class="font-semibold text-white text-lg">Natural Script &amp; Speaking Coach</h3>
+            <p class="mt-2 text-sm text-slate-300">Believable hooks, alternative takes, facial expression cues, pauses, and flexible speaking points.</p>
+          </div>
+          <div class="bg-navy-900 border border-white/10 rounded-2xl p-6">
+            <div class="w-10 h-10 rounded-xl bg-blue-500/15 text-blue-400 flex items-center justify-center mb-4">
+              <i data-lucide="video" class="w-5 h-5"></i>
+            </div>
+            <h3 class="font-semibold text-white text-lg">Camera Director &amp; Storyboard</h3>
+            <p class="mt-2 text-sm text-slate-300">Shot types (selfie, walking, over-the-shoulder), angles, backgrounds, and editable scene cards.</p>
+          </div>
+          <div class="bg-navy-900 border border-white/10 rounded-2xl p-6">
+            <div class="w-10 h-10 rounded-xl bg-purple-500/15 text-purple-400 flex items-center justify-center mb-4">
+              <i data-lucide="wand-2" class="w-5 h-5"></i>
+            </div>
+            <h3 class="font-semibold text-white text-lg">AI Video Generator</h3>
+            <p class="mt-2 text-sm text-slate-300">Provider-independent text-to-video and image-to-video B-roll generation with honest demo fallback.</p>
+          </div>
+          <div class="bg-navy-900 border border-white/10 rounded-2xl p-6">
+            <div class="w-10 h-10 rounded-xl bg-blue-500/15 text-blue-400 flex items-center justify-center mb-4">
+              <i data-lucide="scissors" class="w-5 h-5"></i>
+            </div>
+            <h3 class="font-semibold text-white text-lg">Timeline Editor &amp; Music Matcher</h3>
+            <p class="mt-2 text-sm text-slate-300">Arrange clips, add text overlays and subtitles, match royalty-free tracks, and export via FFmpeg.</p>
+          </div>
+          <div class="bg-navy-900 border border-white/10 rounded-2xl p-6">
+            <div class="w-10 h-10 rounded-xl bg-purple-500/15 text-purple-400 flex items-center justify-center mb-4">
+              <i data-lucide="languages" class="w-5 h-5"></i>
+            </div>
+            <h3 class="font-semibold text-white text-lg">Multilingual &amp; Social Assistant</h3>
+            <p class="mt-2 text-sm text-slate-300">12 Indian &amp; global languages with natural code-mixing, plus platform-tailored titles, captions, and hashtags.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sample Generated Video Plan -->
+    <section id="sample-plan" class="py-16 sm:py-24 bg-navy-900 border-b border-white/10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-10">
+          <div>
+            <span class="text-xs font-semibold uppercase tracking-widest text-blue-400">Sample Output Preview</span>
+            <h2 class="mt-2 text-3xl sm:text-4xl font-bold text-white">See what VlogSpark AI builds from one prompt</h2>
+          </div>
+          <button type="button" id="sample-open-dashboard-btn" class="self-start lg:self-auto px-4 py-2.5 rounded-xl text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-colors flex items-center gap-2">
+            <span>Inspect Full Sample in Dashboard</span>
+            <i data-lucide="external-link" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <div class="bg-navy-800 border border-white/15 rounded-2xl overflow-hidden shadow-2xl">
+          <div class="px-6 py-4 bg-navy-950/60 border-b border-white/10 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <span class="text-xs text-slate-400">Prompt:</span>
+              <p class="text-sm font-medium text-white">"I want to make a 30-second video about my first day at college. Make it interesting, emotional, natural, and relatable."</p>
+            </div>
+            <div class="flex items-center gap-2 text-xs">
+              <span class="px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30">30s Reel / Short</span>
+              <span class="px-2.5 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-400/30">Emotional &amp; Relatable</span>
+            </div>
+          </div>
+
+          <!-- Interactive Tabs for Sample Plan -->
+          <div class="px-6 pt-4 border-b border-white/10 flex flex-wrap gap-2" id="landing-sample-tabs">
+            <button type="button" data-sample-tab="overview" class="sample-tab-btn px-4 py-2 rounded-t-xl text-sm font-medium bg-blue-600 text-white">Concept &amp; Hook</button>
+            <button type="button" data-sample-tab="script" class="sample-tab-btn px-4 py-2 rounded-t-xl text-sm font-medium text-slate-300 hover:text-white">Scene-by-Scene Script</button>
+            <button type="button" data-sample-tab="camera" class="sample-tab-btn px-4 py-2 rounded-t-xl text-sm font-medium text-slate-300 hover:text-white">Camera &amp; Speaking Coach</button>
+            <button type="button" data-sample-tab="social" class="sample-tab-btn px-4 py-2 rounded-t-xl text-sm font-medium text-slate-300 hover:text-white">Music &amp; Social Kit</button>
+          </div>
+
+          <div id="landing-sample-content" class="p-6 text-sm text-slate-200">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Language Support -->
+    <section id="languages" class="py-16 sm:py-24 bg-navy-950 border-b border-white/10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          <div class="lg:col-span-6">
+            <span class="text-xs font-semibold uppercase tracking-widest text-purple-400">Multilingual Studio</span>
+            <h2 class="mt-2 text-3xl sm:text-4xl font-bold text-white">Create in 12 languages without stiff translations</h2>
+            <p class="mt-3 text-slate-300 text-base leading-relaxed">
+              Speak the way people actually talk in your city. Mix English with regional phrases naturally, choose casual or formal tone, and generate matching subtitles.
+            </p>
+            <div class="mt-6 flex flex-wrap gap-2" id="landing-language-pills">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+          <div class="lg:col-span-6">
+            <div class="bg-navy-900 border border-white/15 rounded-2xl p-6 shadow-xl">
+              <div class="flex items-center justify-between mb-4">
+                <span class="text-xs font-semibold uppercase tracking-wider text-blue-300">Live Language Hook Preview</span>
+                <span id="lang-preview-badge" class="px-2.5 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-400/30">English</span>
+              </div>
+              <p id="lang-preview-quote" class="text-lg sm:text-xl font-medium text-white leading-relaxed">
+                "Okay, I'm standing outside the college gate right now and honestly, my hands are a little shaky..."
+              </p>
+              <p id="lang-preview-note" class="mt-3 text-xs text-slate-400">
+                Conversational, casual tone — designed to sound natural when spoken aloud.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing Section (Clearly Marked Demo Plans) -->
+    <section id="pricing" class="py-16 sm:py-24 bg-navy-900 border-b border-white/10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-300 border border-amber-400/30 mb-3">
+            Demo Plans Only — No Real Billing in Stage 1
+          </span>
+          <h2 class="text-3xl sm:text-4xl font-bold text-white">Simple plans for every stage of your channel</h2>
+          <div class="mt-6 inline-flex items-center p-1 rounded-xl bg-navy-800 border border-white/10">
+            <button type="button" id="billing-monthly-btn" class="px-4 py-1.5 rounded-lg text-sm font-medium bg-blue-600 text-white transition-colors">Monthly</button>
+            <button type="button" id="billing-annual-btn" class="px-4 py-1.5 rounded-lg text-sm font-medium text-slate-300 hover:text-white transition-colors">Annual (Save 20%)</button>
+          </div>
+        </div>
+
+        <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Free Demo -->
+          <div class="bg-navy-800 border border-white/10 rounded-2xl p-6 flex flex-col">
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-bold text-white">Starter</h3>
+              <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-white/10 text-slate-300">DEMO PLAN</span>
+            </div>
+            <p class="mt-2 text-sm text-slate-300">Great for students and first-time vloggers testing ideas.</p>
+            <div class="mt-5 flex items-baseline gap-1">
+              <span class="text-3xl font-extrabold text-white" data-price-monthly="$0" data-price-annual="$0">$0</span>
+              <span class="text-sm text-slate-400">/month</span>
+            </div>
+            <ul class="mt-6 space-y-2.5 text-sm text-slate-300 flex-1">
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-400 shrink-0"></i><span>5 AI video plans / month</span></li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-400 shrink-0"></i><span>Speaking coach &amp; camera tips</span></li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-400 shrink-0"></i><span>3 sample projects in Demo Mode</span></li>
+            </ul>
+            <button type="button" data-plan="Starter (Demo)" class="select-plan-btn mt-6 w-full py-2.5 rounded-xl text-sm font-semibold bg-white/10 hover:bg-white/15 text-white transition-colors">
+              Try Starter Demo
+            </button>
+          </div>
+
+          <!-- Creator Pro Demo -->
+          <div class="bg-gradient-to-b from-blue-900/50 to-navy-800 border-2 border-blue-500 rounded-2xl p-6 flex flex-col relative shadow-xl shadow-blue-950/50">
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-bold text-white">Creator Pro</h3>
+              <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-blue-500/25 text-blue-200 border border-blue-400/40">DEMO PLAN</span>
+            </div>
+            <p class="mt-2 text-sm text-slate-200">For regular YouTubers, Reels creators, and freelancers.</p>
+            <div class="mt-5 flex items-baseline gap-1">
+              <span class="text-3xl font-extrabold text-white" data-price-monthly="$19" data-price-annual="$15">$19</span>
+              <span class="text-sm text-slate-300">/month</span>
+            </div>
+            <ul class="mt-6 space-y-2.5 text-sm text-slate-200 flex-1">
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-400 shrink-0"></i><span>Unlimited scripts &amp; storyboards</span></li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-400 shrink-0"></i><span>All 12 languages + code-mixing</span></li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-blue-400 shrink-0"></i><span>Music matcher &amp; FFmpeg export</span></li>
+            </ul>
+            <button type="button" data-plan="Creator Pro (Demo)" class="select-plan-btn mt-6 w-full py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white transition-all">
+              Try Creator Pro Demo
+            </button>
+          </div>
+
+          <!-- Studio Demo -->
+          <div class="bg-navy-800 border border-white/10 rounded-2xl p-6 flex flex-col">
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-bold text-white">Business &amp; Team</h3>
+              <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-white/10 text-slate-300">DEMO PLAN</span>
+            </div>
+            <p class="mt-2 text-sm text-slate-300">For brands, educators, and agencies managing calendars.</p>
+            <div class="mt-5 flex items-baseline gap-1">
+              <span class="text-3xl font-extrabold text-white" data-price-monthly="$49" data-price-annual="$39">$49</span>
+              <span class="text-sm text-slate-400">/month</span>
+            </div>
+            <ul class="mt-6 space-y-2.5 text-sm text-slate-300 flex-1">
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-purple-400 shrink-0"></i><span>Everything in Creator Pro</span></li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-purple-400 shrink-0"></i><span>AI B-roll clip generation</span></li>
+              <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-purple-400 shrink-0"></i><span>Shared content calendar &amp; exports</span></li>
+            </ul>
+            <button type="button" data-plan="Business & Team (Demo)" class="select-plan-btn mt-6 w-full py-2.5 rounded-xl text-sm font-semibold bg-white/10 hover:bg-white/15 text-white transition-colors">
+              Try Team Demo
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-16 sm:py-24 bg-navy-950 border-b border-white/10">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10">
+          <span class="text-xs font-semibold uppercase tracking-widest text-blue-400">FAQ</span>
+          <h2 class="mt-2 text-3xl font-bold text-white">Common questions</h2>
+        </div>
+        <div class="space-y-3" id="faq-accordion">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-navy-950 py-10 text-sm text-slate-400">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-white">VlogSpark AI</span>
+          <span>•</span>
+          <span>Stage 1 Build (Landing Page, Responsive Dashboard &amp; Demo Mode)</span>
+        </div>
+        <div class="flex items-center gap-4">
+          <button type="button" id="footer-demo-btn" class="text-blue-400 hover:text-blue-300 font-medium">Open Demo Dashboard</button>
+          <a href="#top" class="hover:text-white transition-colors">Back to top</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ==================== DASHBOARD VIEW ==================== -->
+  <div id="dashboard-view" class="hidden min-h-screen flex bg-slate-50 text-slate-900">
+
+    <!-- Mobile Sidebar Backdrop -->
+    <div id="sidebar-backdrop" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 lg:hidden"></div>
+
+    <!-- Sidebar -->
+    <aside id="dashboard-sidebar" class="fixed lg:sticky top-0 left-0 z-50 h-screen w-64 bg-navy-900 text-slate-200 flex flex-col border-r border-white/10 transform -translate-x-full lg:translate-x-0 transition-transform duration-200 ease-out shrink-0">
+      <!-- Brand -->
+      <div class="h-16 px-4 flex items-center justify-between border-b border-white/10 shrink-0">
+        <button type="button" id="sidebar-home-btn" class="flex items-center gap-2.5 text-left">
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow">
+            <i data-lucide="sparkles" class="w-4 h-4 text-white"></i>
+          </div>
+          <div>
+            <div class="font-bold text-sm text-white leading-tight">VlogSpark AI</div>
+            <div class="text-[10px] text-blue-300 font-medium">Stage 1 Demo Mode</div>
+          </div>
+        </button>
+        <button type="button" id="close-sidebar-btn" aria-label="Close sidebar" class="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Nav Items -->
+      <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1" id="sidebar-nav">
+        <!-- Populated by JS with all 13 required items -->
+      </nav>
+
+      <!-- Bottom User Card -->
+      <div class="p-3 border-t border-white/10 bg-navy-950/50 shrink-0">
+        <div class="flex items-center gap-2.5">
+          <div id="sidebar-user-avatar" class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shrink-0">A</div>
+          <div class="min-w-0 flex-1">
+            <div id="sidebar-user-name" class="text-sm font-semibold text-white truncate">Aarav (Demo)</div>
+            <div id="sidebar-user-role" class="text-xs text-slate-400 truncate">Student • English</div>
+          </div>
+          <button type="button" id="back-to-landing-btn" title="Back to Landing Page" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10">
+            <i data-lucide="log-out" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Dashboard Area -->
+    <div class="flex-1 flex flex-col min-w-0">
+      <!-- Top Bar -->
+      <header class="sticky top-0 z-30 h-16 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <button type="button" id="open-sidebar-btn" aria-label="Open navigation" class="lg:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+          <div class="min-w-0">
+            <h1 id="dash-page-title" class="text-base sm:text-lg font-bold text-slate-900 truncate">Overview</h1>
+            <p id="dash-page-subtitle" class="text-xs text-slate-500 truncate hidden sm:block">Your Stage 1 creative workspace</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+          <span class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+            <span class="w-1.5 h-1.5 rounded-full bg-purple-600"></span>
+            DEMO MODE
+          </span>
+          <button type="button" id="topbar-new-project-btn" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-sm flex items-center gap-1.5">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>New Project</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Demo Mode Info Banner -->
+      <div class="bg-blue-50 border-b border-blue-100 px-4 sm:px-6 py-2 flex flex-wrap items-center justify-between gap-2 text-xs text-blue-900">
+        <div class="flex items-center gap-2">
+          <i data-lucide="info" class="w-4 h-4 text-blue-600 shrink-0"></i>
+          <span><strong>Stage 1 Active:</strong> Landing page, responsive dashboard, 3 sample projects, calendar &amp; settings work in-browser. AI generation &amp; FFmpeg backend arrive in Stages 2–8.</span>
+        </div>
+        <button type="button" id="banner-landing-btn" class="font-semibold text-blue-700 hover:underline">View Landing Page</button>
+      </div>
+
+      <!-- Dynamic Page Content -->
+      <main id="dashboard-content" class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+        <!-- Rendered dynamically by JS -->
+      </main>
+    </div>
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- Auth Modal (Login / Sign Up / Demo) -->
+  <div id="auth-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 animate-fade-up">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+          </div>
+          <h3 id="auth-modal-title" class="text-lg font-bold text-slate-900">Welcome to VlogSpark AI</h3>
+        </div>
+        <button type="button" id="close-auth-modal" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-1 p-1 bg-slate-100 rounded-xl mb-4">
+        <button type="button" id="auth-tab-login" class="py-2 rounded-lg text-sm font-semibold bg-white text-slate-900 shadow-xs">Log In</button>
+        <button type="button" id="auth-tab-signup" class="py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-slate-900">Sign Up</button>
+      </div>
+
+      <form id="auth-form" class="space-y-3.5">
+        <div id="auth-name-group" class="hidden">
+          <label for="auth-name" class="block text-xs font-semibold text-slate-700 mb-1">Your Name</label>
+          <input id="auth-name" type="text" placeholder="e.g., Ananya Sharma" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div id="auth-role-group" class="hidden">
+          <label for="auth-role" class="block text-xs font-semibold text-slate-700 mb-1">Creator Type</label>
+          <select id="auth-role" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="Student">Student</option>
+            <option value="Daily Vlogger">Daily Vlogger</option>
+            <option value="YouTube Creator">YouTube Creator</option>
+            <option value="Instagram Creator">Instagram Creator</option>
+            <option value="Business Owner">Business Owner</option>
+            <option value="Educator">Educator</option>
+          </select>
+        </div>
+        <div>
+          <label for="auth-email" class="block text-xs font-semibold text-slate-700 mb-1">Email (Demo)</label>
+          <input id="auth-email" type="email" required value="creator@vlogspark.demo" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label for="auth-password" class="block text-xs font-semibold text-slate-700 mb-1">Password</label>
+          <input id="auth-password" type="password" required value="demo1234" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <p class="text-[11px] text-slate-500 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+          Stage 1 Demo Auth: Signs you into the in-browser workspace. Real Supabase Auth is scheduled for Stage 8.
+        </p>
+        <button type="submit" id="auth-submit-btn" class="w-full py-2.5 rounded-xl text-sm font-semibold bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-500 hover:to-purple-500 shadow">
+          Continue to Dashboard
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- New Project Modal -->
+  <div id="new-project-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 animate-fade-up">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold text-slate-900">Create Sample Draft Project</h3>
+        <button type="button" id="close-new-project-modal" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <form id="new-project-form" class="space-y-3.5">
+        <div>
+          <label for="np-title" class="block text-xs font-semibold text-slate-700 mb-1">Project Title</label>
+          <input id="np-title" type="text" required placeholder="e.g., My Weekend Coffee Shop Vlog" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label for="np-prompt" class="block text-xs font-semibold text-slate-700 mb-1">Video Idea / Prompt</label>
+          <textarea id="np-prompt" rows="2" required placeholder="Describe what you want to film and the feeling you want..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="np-platform" class="block text-xs font-semibold text-slate-700 mb-1">Platform</label>
+            <select id="np-platform" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white">
+              <option>Instagram Reels</option>
+              <option>YouTube Shorts</option>
+              <option>YouTube Video</option>
+              <option>LinkedIn Video</option>
+            </select>
+          </div>
+          <div>
+            <label for="np-language" class="block text-xs font-semibold text-slate-700 mb-1">Language</label>
+            <select id="np-language" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white">
+              <option>English</option>
+              <option>Hindi</option>
+              <option>Telugu</option>
+              <option>Tamil</option>
+              <option>Kannada</option>
+              <option>Malayalam</option>
+              <option>Marathi</option>
+              <option>Bengali</option>
+              <option>Gujarati</option>
+              <option>Punjabi</option>
+              <option>Odia</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="np-duration" class="block text-xs font-semibold text-slate-700 mb-1">Duration</label>
+            <select id="np-duration" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white">
+              <option>30 sec</option>
+              <option>45 sec</option>
+              <option>60 sec</option>
+              <option>3 min</option>
+            </select>
+          </div>
+          <div>
+            <label for="np-mood" class="block text-xs font-semibold text-slate-700 mb-1">Mood</label>
+            <select id="np-mood" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-sm bg-white">
+              <option>Natural &amp; Relatable</option>
+              <option>Emotional</option>
+              <option>Energetic</option>
+              <option>Chill &amp; Lo-fi</option>
+              <option>Educational</option>
+            </select>
+          </div>
+        </div>
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" id="cancel-new-project" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded-xl text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white">Save Draft</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Project Detail Drawer/Modal -->
+  <div id="project-detail-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
+    <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[88vh] flex flex-col shadow-2xl border border-slate-200 animate-fade-up overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between gap-3 bg-slate-50">
+        <div class="min-w-0">
+          <span id="pd-badges" class="text-xs font-semibold text-blue-600 uppercase tracking-wider"></span>
+          <h3 id="pd-title" class="text-lg font-bold text-slate-900 truncate"></h3>
+        </div>
+        <button type="button" id="close-project-detail" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div id="pd-body" class="p-6 overflow-y-auto space-y-5 text-sm">
+        <!-- Populated by JS -->
+      </div>
+      <div class="px-6 py-3.5 border-t border-slate-200 bg-slate-50 flex flex-wrap items-center justify-between gap-2">
+        <button type="button" id="pd-copy-btn" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 flex items-center gap-1.5">
+          <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+          <span>Copy Script &amp; Caption</span>
+        </button>
+        <div class="flex items-center gap-2">
+          <button type="button" id="pd-open-script-btn" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-blue-600 text-white hover:bg-blue-500">Open in Script Studio</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal (No native confirm()) -->
+  <div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-xs">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 animate-fade-up">
+      <h3 class="text-base font-bold text-slate-900">Delete Project?</h3>
+      <p id="delete-modal-text" class="mt-2 text-sm text-slate-600">Are you sure you want to remove this sample project from your demo workspace?</p>
+      <div class="mt-5 flex justify-end gap-2">
+        <button type="button" id="cancel-delete-btn" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100">Cancel</button>
+        <button type="button" id="confirm-delete-btn" class="px-4 py-2 rounded-xl text-sm font-semibold bg-rose-600 hover:bg-rose-500 text-white">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // ==================== DATA & STATE ====================
+      const LANGUAGES = [
+        { name: 'English', quote: '"Okay, I\'m standing outside the college gate right now and honestly, my hands are a little shaky..."', note: 'Conversational & relatable — short sentences for natural delivery.' },
+        { name: 'Hindi', quote: '"Yaar, college gate ke bahar khada hoon aur sach bolun toh thodi si nervous feeling aa rahi hai..."', note: 'Natural Hinglish conversational flow — avoids formal textbook Hindi.' },
+        { name: 'Telugu', quote: '"College gate bayata nilabadanu... nijam cheppalante konchem excitement, konchem tension undi."', note: 'Everyday spoken Telugu tone — warm and relatable.' },
+        { name: 'Tamil', quote: '"College gate veliya nikkiren... konjam bayama irukku, aana romba excited-a irukku."', note: 'Natural spoken Tamil with casual pacing.' },
+        { name: 'Kannada', quote: '"College gate horage nintidini... swalpa nervous aagide, aadre tumba khushi kooda aagide."', note: 'Friendly Bengaluru-style everyday Kannada.' },
+        { name: 'Malayalam', quote: '"College gate-inte purathu nilkkuva... cheriya oru tension undu, pakshe athilum valiya excitement aanu."', note: 'Casual spoken Malayalam with natural pauses.' },
+        { name: 'Marathi', quote: '"College chya gate baher ubha ahe... khara sangaycha tar thodi dhakdhuk hotey, pan majja pan yetey."', note: 'Warm conversational Marathi.' },
+        { name: 'Bengali', quote: '"College gate-er baire dariye achhi... sotti bolte ektu nervous lagchhe, kintu bhalo-o lagchhe."', note: 'Natural colloquial Bengali.' },
+        { name: 'Gujarati', quote: '"College na gate bahar ubho chhu... sachhu kahu toh thodi ghabhrahat chhe pan maja pan aave chhe."', note: 'Friendly, expressive Gujarati.' },
+        { name: 'Punjabi', quote: '"College de gate bahar khada haan... sach dassan taan thoda nervous haan par excited vi bahut haan."', note: 'Upbeat conversational Punjabi.' },
+        { name: 'Odia', quote: '"College gate bahare thia hoichhi... sata kahile tike nervous laguchhi, kintu bahut khusi bi laguchhi."', note: 'Natural spoken Odia.' }
+      ];
+
+      const FAQS = [
+        { q: 'What is included in Stage 1 right now?', a: 'Stage 1 delivers the full responsive landing page, sign-up/login demo modal, dashboard with all 13 navigation sections, 3 realistic sample projects, an interactive content calendar, and user settings.' },
+        { q: 'Will the dialogue sound robotic like typical AI scripts?', a: 'No. VlogSpark AI is designed to write short, spoken-aloud sentences with natural pauses, speaking points instead of rigid memorization, and regional code-mixing.' },
+        { q: 'Are real AI video generation and FFmpeg export active yet?', a: 'Not yet—those arrive in Stages 6 and 7. Right now you can explore the UI previews and sample production plans in Demo Mode.' },
+        { q: 'Do I need to pay for the pricing plans shown?', a: 'No. All pricing tiers are clearly labeled Demo Plans for Stage 1 preview purposes with zero real billing.' }
+      ];
+
+      const SIDEBAR_ITEMS = [
+        { id: 'overview', label: 'Overview', icon: 'layout-dashboard', stage: 'Stage 1' },
+        { id: 'create-ai', label: 'Create with AI', icon: 'sparkles', stage: 'Stage 1' },
+        { id: 'video-ideas', label: 'Video Ideas', icon: 'lightbulb', stage: 'Stage 2' },
+        { id: 'script-studio', label: 'Script Studio', icon: 'file-text', stage: 'Stage 3' },
+        { id: 'recording-director', label: 'Recording Director', icon: 'video', stage: 'Stage 3' },
+        { id: 'storyboard', label: 'Storyboard', icon: 'clapperboard', stage: 'Stage 4' },
+        { id: 'ai-video', label: 'AI Video Generator', icon: 'wand-2', stage: 'Stage 6' },
+        { id: 'video-editor', label: 'Video Editor', icon: 'scissors', stage: 'Stage 7' },
+        { id: 'music-studio', label: 'Music Studio', icon: 'music', stage: 'Stage 7' },
+        { id: 'subtitles', label: 'Subtitle Generator', icon: 'captions', stage: 'Stage 4' },
+        { id: 'calendar', label: 'Content Calendar', icon: 'calendar', stage: 'Stage 1' },
+        { id: 'projects', label: 'My Projects', icon: 'folder-kanban', stage: 'Stage 1' },
+        { id: 'settings', label: 'Settings', icon: 'settings', stage: 'Stage 1' }
+      ];
+
+      const DEFAULT_PROJECTS = [
+        {
+          id: 'proj-college-1',
+          title: 'First Day at College (30s Reel)',
+          prompt: 'I want to make a 30-second video about my first day at college. Make it interesting, emotional, natural, and relatable.',
+          category: 'College life',
+          platform: 'Instagram Reels',
+          language: 'English',
+          duration: '30 sec',
+          mood: 'Emotional & Relatable',
+          status: 'Ready to Shoot',
+          scheduledDate: '2026-11-23',
+          starred: true,
+          concept: 'A raw, 30-second mini-story capturing the quiet nerves at the college gate turning into excitement by the end of day one.',
+          hook: '"Okay, I\'m standing outside my college gate right now and honestly, my hands are a little shaky."',
+          caption: 'Day 1 felt scary for the first 10 minutes... and then it felt like home. Anyone else remember their first day? 🎒✨',
+          hashtags: '#FirstDayAtCollege #CollegeLife #StudentVlog #RelatableReels #NewBeginnings',
+          music: 'Warm Indie Acoustic (Royalty-Free — Chill / Emotional, 88 BPM)',
+          scenes: [
+            { num: 1, time: '0–6s', shot: 'Selfie Shot (Eye-level)', desc: 'Standing outside college gate, backpack on, soft morning light.', line: '"Okay, I\'m standing outside my college gate right now and honestly, my hands are a little shaky."', cue: 'Smile slightly nervous, speak softly, pause after "right now".' },
+            { num: 2, time: '6–14s', shot: 'Walking POV Shot', desc: 'Quick clips walking past campus trees and finding the first classroom.', line: '"New campus, zero familiar faces, and me pretending I know where my classroom is."', cue: 'Light chuckle, natural walking pace.' },
+            { num: 3, time: '14–23s', shot: 'Over-the-Shoulder Shot', desc: 'Notebook on desk, coffee cup or canteen table with a new classmate.', line: '"Then someone next to me asked for a pen... and suddenly we\'ve been talking for twenty minutes."', cue: 'Warm tone, emphasize "asked for a pen".' },
+            { num: 4, time: '23–30s', shot: 'Wide / Sunset Selfie', desc: 'Walking out at the end of the day, relaxed smile.', line: '"Day one? Not as scary as I thought. If yours is coming up, just breathe."', cue: 'Slow down on "just breathe", genuine smile.' }
+          ]
+        },
+        {
+          id: 'proj-python-2',
+          title: 'Learning Programming as a Beginner',
+          prompt: 'Create an interesting video about learning programming as a beginner.',
+          category: 'Education',
+          platform: 'YouTube Shorts',
+          language: 'Hindi',
+          duration: '45 sec',
+          mood: 'Encouraging & Clear',
+          status: 'Script Drafted',
+          scheduledDate: '2026-11-25',
+          starred: false,
+          concept: 'Honest beginner perspective on why coding feels confusing in week one—and the one habit that makes it click.',
+          hook: '"Sab bolte hain coding easy hai, par jab pehla error aata hai na, dimaag ghoom jaata hai."',
+          caption: 'First week of coding vs. finally fixing that one missing bracket 😂 Keep going! 💻',
+          hashtags: '#LearnCoding #ProgrammingBeginner #TechHindi #YouTubeShorts #CodingJourney',
+          music: 'Clean Lo-Fi Beats (Royalty-Free — Chill / Focus, 95 BPM)',
+          scenes: [
+            { num: 1, time: '0–8s', shot: 'Close-Up Desk Shot', desc: 'Creator looking at laptop screen with a confused expression.', line: '"Sab bolte hain coding easy hai, par jab pehla error aata hai na, dimaag ghoom jaata hai."', cue: 'Relatable, slightly dramatic pause before "dimaag ghoom jaata hai".' },
+            { num: 2, time: '8–25s', shot: 'Over-the-Shoulder Screen Shot', desc: 'Showing a simple 5-line Python loop running successfully.', line: '"Trick yeh hai ki sab kuch ek din mein mat sikho. Bas roz 20 minute chhote programs banao."', cue: 'Calm, encouraging tone, point at screen.' },
+            { num: 3, time: '25–45s', shot: 'Selfie Desk Shot', desc: 'Creator smiling at camera with notebook.', line: '"Aaj mera pehla calculator script chala. Tum kaunsi language seekh rahe ho? Comment mein batao."', cue: 'Upbeat CTA, smile.' }
+          ]
+        },
+        {
+          id: 'proj-food-3',
+          title: 'Hyderabad Morning Irani Chai & Osmania Biscuit',
+          prompt: 'Make a cozy 45-second food vlog about morning Irani chai in Hyderabad.',
+          category: 'Food',
+          platform: 'Instagram Reels',
+          language: 'Telugu',
+          duration: '45 sec',
+          mood: 'Cozy & Chill',
+          status: 'Scheduled',
+          scheduledDate: '2026-11-28',
+          starred: true,
+          concept: 'Sensory morning mini-vlog highlighting street sounds, steaming chai pour, and local nostalgia.',
+          hook: '"Morning 7 AM ki Hyderabad lo ee okka cup chai unte chaalu, day set aipothundi."',
+          caption: 'Nothing beats 7 AM Irani chai and fresh Osmania biscuits ☕✨',
+          hashtags: '#HyderabadFood #IraniChai #TeluguVlog #MorningVibes #FoodReels',
+          music: 'Soft Acoustic Guitar (Royalty-Free — Chill, 82 BPM)',
+          scenes: [
+            { num: 1, time: '0–10s', shot: 'Establishing Street Shot', desc: 'Morning cafe signboard and steam rising from kettle.', line: '"Morning 7 AM ki Hyderabad lo ee okka cup chai unte chaalu, day set aipothundi."', cue: 'Soft voiceover over ambient cafe sound.' },
+            { num: 2, time: '10–30s', shot: 'Close-Up Pour Shot', desc: 'Chai poured into glass cup, dipping Osmania biscuit.', line: '"Choodandi aa colour... hot chai lo biscuit dip chesi thinte aa feel eh veru."', cue: 'Relaxed, appreciative tone.' },
+            { num: 3, time: '30–45s', shot: 'Selfie Sip Shot', desc: 'Creator taking a sip and nodding.', line: '"Meeru eppudaina ikkada try chesara? Next spot suggest cheyandi!"', cue: 'Friendly smile.' }
+          ]
+        }
+      ];
+
+      const STAGES_ROADMAP = [
+        { stage: 'Stage 1', title: 'Landing Page, Dashboard & Demo Mode', done: true },
+        { stage: 'Stage 2', title: 'Prompt Input, Settings & AI Idea Generator', done: false },
+        { stage: 'Stage 3', title: 'Natural Dialogue, Speaking Coach & Camera Director', done: false },
+        { stage: 'Stage 4', title: 'Storyboard Generator & 12-Language Studio', done: false },
+        { stage: 'Stage 5', title: 'Video Upload, Preview & Scene Management', done: false },
+        { stage: 'Stage 6', title: 'AI Video Generation Provider Integration', done: false },
+        { stage: 'Stage 7', title: 'Subtitles, Music Matcher & FFmpeg Export', done: false },
+        { stage: 'Stage 8–9', title: 'Supabase Auth, DB Persistence & Deployment', done: false }
+      ];
+
+      // App State
+      let state = {
+        view: 'landing', // 'landing' | 'dashboard'
+        activeNav: 'overview',
+        landingSampleTab: 'overview',
+        landingLanguage: 'English',
+        billingAnnual: false,
+        user: {
+          name: 'Aarav (Demo)',
+          role: 'Student',
+          defaultPlatform: 'Instagram Reels',
+          defaultLanguage: 'English',
+          demoMode: true
+        },
+        projects: JSON.parse(JSON.stringify(DEFAULT_PROJECTS)),
+        selectedProjectId: 'proj-college-1',
+        projectSearch: '',
+        projectFilterPlatform: 'All',
+        pendingDeleteId: null,
+        aiGen: {
+          title: 'Why students should learn Artificial Intelligence',
+          platform: 'YouTube Shorts',
+          language: 'English',
+          contentType: 'Educational',
+          tone: 'Casual & Conversational',
+          duration: '60 sec',
+          audience: 'Students & Beginners',
+          activeTab: 'script',
+          isEditing: false,
+          isLoading: false,
+          error: '',
+          variation: 0,
+          result: null
+        }
+      };
+
+      // Load saved state safely if present
+      try {
+        const saved = localStorage.getItem('vlogspark_stage1_state');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed && Array.isArray(parsed.projects) && parsed.projects.length > 0) {
+            state.projects = parsed.projects;
+            state.user = Object.assign({}, state.user, parsed.user || {});
+            state.selectedProjectId = parsed.selectedProjectId || state.projects[0].id;
+          }
+        }
+      } catch (e) {
+        // Ignore storage errors in sandboxed frames
+      }
+
+      function persistState() {
+        try {
+          localStorage.setItem('vlogspark_stage1_state', JSON.stringify({
+            user: state.user,
+            projects: state.projects,
+            selectedProjectId: state.selectedProjectId
+          }));
+        } catch (e) {
+          // Ignore storage errors
+        }
+      }
+
+      // ==================== HELPERS ====================
+      function escapeHtml(str) {
+        return String(str || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function showToast(message, type) {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        const el = document.createElement('div');
+        const bg = type === 'error' ? 'bg-rose-600' : 'bg-navy-900 border border-white/15';
+        el.className = `pointer-events-auto px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium text-white shadow-xl flex items-center gap-2 animate-fade-up ${bg}`;
+        el.innerHTML = `<span>${escapeHtml(message)}</span>`;
+        container.appendChild(el);
+        setTimeout(() => {
+          el.remove();
+        }, 3200);
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(() => {
+            showToast('Copied to clipboard');
+          }).catch(() => fallbackCopy(text));
+        } else {
+          fallbackCopy(text);
+        }
+      }
+
+      function fallbackCopy(text) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+          document.execCommand('copy');
+          showToast('Copied to clipboard');
+        } catch (e) {
+          showToast('Copy failed — please select text manually', 'error');
+        }
+        ta.remove();
+      }
+
+      function refreshIcons() {
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+          window.lucide.createIcons();
+        }
+      }
+
+      function getSelectedProject() {
+        return state.projects.find(p => p.id === state.selectedProjectId) || state.projects[0] || null;
+      }
+
+      // ==================== VIEW SWITCHING ====================
+      function switchToDashboard(targetNav) {
+        state.view = 'dashboard';
+        if (targetNav) state.activeNav = targetNav;
+        document.getElementById('landing-view').classList.add('hidden');
+        document.getElementById('dashboard-view').classList.remove('hidden');
+        renderDashboard();
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }
+
+      function switchToLanding() {
+        state.view = 'landing';
+        document.getElementById('dashboard-view').classList.add('hidden');
+        document.getElementById('landing-view').classList.remove('hidden');
+        refreshIcons();
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }
+
+      // ==================== LANDING PAGE RENDERERS ====================
+      function renderLandingSampleTab() {
+        const proj = DEFAULT_PROJECTS[0];
+        const container = document.getElementById('landing-sample-content');
+        const tab = state.landingSampleTab;
+
+        document.querySelectorAll('.sample-tab-btn').forEach(btn => {
+          const isActive = btn.getAttribute('data-sample-tab') === tab;
+          btn.className = isActive
+            ? 'sample-tab-btn px-4 py-2 rounded-t-xl text-sm font-medium bg-blue-600 text-white'
+            : 'sample-tab-btn px-4 py-2 rounded-t-xl text-sm font-medium text-slate-300 hover:text-white';
+        });
+
+        if (tab === 'overview') {
+          container.innerHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-3">
+                <div>
+                  <div class="text-xs font-semibold uppercase tracking-wider text-blue-300">Video Concept</div>
+                  <p class="mt-1 text-slate-200">${escapeHtml(proj.concept)}</p>
+                </div>
+                <div>
+                  <div class="text-xs font-semibold uppercase tracking-wider text-purple-300">Target Audience</div>
+                  <p class="mt-1 text-slate-300">Incoming college students, teenagers, and campus vloggers.</p>
+                </div>
+              </div>
+              <div class="bg-navy-900/90 border border-white/10 rounded-xl p-4">
+                <div class="text-xs font-semibold uppercase tracking-wider text-emerald-300 mb-1.5">Opening Hook (0–6s)</div>
+                <p class="text-base font-medium text-white">${escapeHtml(proj.hook)}</p>
+                <p class="mt-2 text-xs text-slate-400">Why it works: Immediately relatable, conversational, and invites viewers to stay for how the day turns out.</p>
+              </div>
+            </div>
+          `;
+        } else if (tab === 'script') {
+          container.innerHTML = `
+            <div class="space-y-3">
+              ${proj.scenes.map(s => `
+                <div class="bg-navy-900/80 border border-white/10 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <span class="text-xs font-semibold text-blue-400">Scene ${s.num} • ${escapeHtml(s.time)}</span>
+                    <p class="mt-1 text-white font-medium">${escapeHtml(s.line)}</p>
+                  </div>
+                  <span class="text-xs px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-slate-300 shrink-0">${escapeHtml(s.shot)}</span>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } else if (tab === 'camera') {
+          container.innerHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              ${proj.scenes.map(s => `
+                <div class="bg-navy-900/80 border border-white/10 rounded-xl p-4 space-y-1.5">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-semibold text-purple-300">Scene ${s.num}: ${escapeHtml(s.shot)}</span>
+                    <span class="text-xs text-slate-400">${escapeHtml(s.time)}</span>
+                  </div>
+                  <p class="text-xs text-slate-300"><strong>Background:</strong> ${escapeHtml(s.desc)}</p>
+                  <p class="text-xs text-blue-300"><strong>Speaking Coach:</strong> ${escapeHtml(s.cue)}</p>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } else {
+          container.innerHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="bg-navy-900/80 border border-white/10 rounded-xl p-4 space-y-2">
+                <div class="text-xs font-semibold uppercase tracking-wider text-blue-300">Music Suggestion</div>
+                <p class="text-white font-medium">${escapeHtml(proj.music)}</p>
+                <p class="text-xs text-slate-400">Royalty-free license — safe for Reels &amp; Shorts without copyright strikes.</p>
+              </div>
+              <div class="bg-navy-900/80 border border-white/10 rounded-xl p-4 space-y-2">
+                <div class="text-xs font-semibold uppercase tracking-wider text-purple-300">Social Media Caption &amp; Hashtags</div>
+                <p class="text-slate-200">${escapeHtml(proj.caption)}</p>
+                <p class="text-xs text-blue-300">${escapeHtml(proj.hashtags)}</p>
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      function renderLandingLanguages() {
+        const pillsContainer = document.getElementById('landing-language-pills');
+        pillsContainer.innerHTML = LANGUAGES.map(l => {
+          const active = l.name === state.landingLanguage;
+          return `<button type="button" data-lang="${escapeHtml(l.name)}" class="lang-pill-btn px-3 py-1.5 rounded-xl text-xs sm:text-sm font-medium border transition-all ${active ? 'bg-blue-600 text-white border-blue-500 shadow' : 'bg-white/5 text-slate-300 border-white/10 hover:bg-white/10'}">${escapeHtml(l.name)}</button>`;
+        }).join('');
+
+        const selected = LANGUAGES.find(l => l.name === state.landingLanguage) || LANGUAGES[0];
+        document.getElementById('lang-preview-badge').textContent = selected.name;
+        document.getElementById('lang-preview-quote').textContent = selected.quote;
+        document.getElementById('lang-preview-note').textContent = selected.note;
+      }
+
+      function renderFaq() {
+        const container = document.getElementById('faq-accordion');
+        container.innerHTML = FAQS.map((item, idx) => `
+          <div class="bg-navy-900 border border-white/10 rounded-2xl overflow-hidden">
+            <button type="button" data-faq-idx="${idx}" class="faq-toggle-btn w-full px-5 py-4 text-left flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
+              <span class="font-semibold text-white text-sm sm:text-base">${escapeHtml(item.q)}</span>
+              <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 shrink-0 transition-transform"></i>
+            </button>
+            <div id="faq-ans-${idx}" class="${idx === 0 ? '' : 'hidden'} px-5 pb-4 text-sm text-slate-300 leading-relaxed border-t border-white/5 pt-3">
+              ${escapeHtml(item.a)}
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // ==================== DASHBOARD RENDERERS ====================
+      function renderSidebar() {
+        const nav = document.getElementById('sidebar-nav');
+        nav.innerHTML = SIDEBAR_ITEMS.map(item => {
+          const active = state.activeNav === item.id;
+          const isStage1 = item.stage === 'Stage 1';
+          return `
+            <button type="button" data-nav-id="${item.id}" class="dash-nav-btn w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${active ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md' : 'text-slate-300 hover:text-white hover:bg-white/10'}">
+              <span class="flex items-center gap-2.5 truncate">
+                <i data-lucide="${item.icon}" class="w-4 h-4 shrink-0"></i>
+                <span class="truncate">${escapeHtml(item.label)}</span>
+              </span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded-md shrink-0 ${active ? 'bg-white/20 text-white' : (isStage1 ? 'bg-emerald-500/15 text-emerald-300' : 'bg-white/5 text-slate-400')}">${escapeHtml(item.stage)}</span>
+            </button>
+          `;
+        }).join('');
+
+        const initial = (state.user.name || 'A').trim().charAt(0).toUpperCase();
+        document.getElementById('sidebar-user-avatar').textContent = initial;
+        document.getElementById('sidebar-user-name').textContent = state.user.name;
+        document.getElementById('sidebar-user-role').textContent = `${state.user.role} • ${state.user.defaultLanguage}`;
+      }
+
+      function renderDashboard() {
+        renderSidebar();
+        const activeMeta = SIDEBAR_ITEMS.find(i => i.id === state.activeNav) || SIDEBAR_ITEMS[0];
+        document.getElementById('dash-page-title').textContent = activeMeta.label;
+        document.getElementById('dash-page-subtitle').textContent = activeMeta.stage === 'Stage 1'
+          ? 'Active in Stage 1 Demo Workspace'
+          : `${activeMeta.stage} Preview — showing sample project data`;
+
+        const container = document.getElementById('dashboard-content');
+        const id = state.activeNav;
+
+        if (id === 'overview') {
+          renderOverviewPage(container);
+        } else if (id === 'create-ai') {
+          renderCreateWithAIPage(container);
+        } else if (id === 'projects') {
+          renderProjectsPage(container);
+        } else if (id === 'calendar') {
+          renderCalendarPage(container);
+        } else if (id === 'settings') {
+          renderSettingsPage(container);
+        } else {
+          renderStagePreviewPage(container, activeMeta);
+        }
+
+        refreshIcons();
+      }
+
+      function renderOverviewPage(container) {
+        const total = state.projects.length;
+        const starred = state.projects.filter(p => p.starred).length;
+        const scheduled = state.projects.filter(p => p.scheduledDate).length;
+
+        container.innerHTML = `
+          <div class="space-y-6 animate-fade-up">
+            <!-- Welcome Banner -->
+            <div class="bg-gradient-to-r from-navy-900 via-navy-800 to-blue-950 text-white rounded-2xl p-6 shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-500/20 text-blue-200 border border-blue-400/30 mb-2">
+                  Welcome back, ${escapeHtml(state.user.name)}
+                </span>
+                <h2 class="text-xl sm:text-2xl font-bold">Ready to direct your next video?</h2>
+                <p class="mt-1 text-sm text-slate-300">Explore your 3 pre-loaded sample projects or create a new draft in Demo Mode.</p>
+              </div>
+              <div class="flex flex-wrap gap-2 shrink-0">
+                <button type="button" data-quick-nav="projects" class="quick-nav-btn px-4 py-2.5 rounded-xl text-sm font-semibold bg-white text-navy-900 hover:bg-slate-100 transition-colors">
+                  Browse Sample Projects
+                </button>
+                <button type="button" data-quick-nav="create-ai" class="quick-nav-btn px-4 py-2.5 rounded-xl text-sm font-semibold bg-purple-600 hover:bg-purple-500 text-white transition-colors">
+                  ✨ Title-to-Content AI
+                </button>
+                <button type="button" id="overview-new-btn" class="px-4 py-2.5 rounded-xl text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-colors">
+                  + New Draft
+                </button>
+              </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
+                <div class="text-xs font-semibold text-slate-500 uppercase">Sample Projects</div>
+                <div class="mt-2 text-2xl font-extrabold text-slate-900">${total}</div>
+                <div class="mt-1 text-xs text-emerald-600 font-medium">${starred} starred</div>
+              </div>
+              <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
+                <div class="text-xs font-semibold text-slate-500 uppercase">Scheduled Posts</div>
+                <div class="mt-2 text-2xl font-extrabold text-slate-900">${scheduled}</div>
+                <div class="mt-1 text-xs text-blue-600 font-medium">View in Calendar</div>
+              </div>
+              <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
+                <div class="text-xs font-semibold text-slate-500 uppercase">Languages Ready</div>
+                <div class="mt-2 text-2xl font-extrabold text-slate-900">12</div>
+                <div class="mt-1 text-xs text-purple-600 font-medium">Default: ${escapeHtml(state.user.defaultLanguage)}</div>
+              </div>
+              <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
+                <div class="text-xs font-semibold text-slate-500 uppercase">Build Progress</div>
+                <div class="mt-2 text-2xl font-extrabold text-slate-900">Stage 1 / 9</div>
+                <div class="mt-1 text-xs text-slate-500 font-medium">UI &amp; Demo Workspace</div>
+              </div>
+            </div>
+
+            <!-- Sample Projects & Roadmap -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              <div class="lg:col-span-7 bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="font-bold text-slate-900">Recent Sample Projects</h3>
+                  <button type="button" data-quick-nav="projects" class="quick-nav-btn text-xs font-semibold text-blue-600 hover:underline">View all</button>
+                </div>
+                <div class="space-y-3">
+                  ${state.projects.slice(0, 4).map(p => `
+                    <div class="border border-slate-200 rounded-xl p-4 hover:border-blue-300 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div class="min-w-0">
+                        <div class="flex items-center gap-2">
+                          <span class="font-semibold text-slate-900 text-sm truncate">${escapeHtml(p.title)}</span>
+                          <span class="px-2 py-0.5 rounded-full text-[11px] font-medium bg-blue-50 text-blue-700">${escapeHtml(p.platform)}</span>
+                        </div>
+                        <p class="mt-1 text-xs text-slate-500 truncate">${escapeHtml(p.prompt)}</p>
+                      </div>
+                      <button type="button" data-inspect-id="${p.id}" class="inspect-project-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-700 transition-colors shrink-0">
+                        Inspect Plan
+                      </button>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+
+              <div class="lg:col-span-5 bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
+                <h3 class="font-bold text-slate-900 mb-4">9-Stage Build Roadmap</h3>
+                <div class="space-y-2.5">
+                  ${STAGES_ROADMAP.map(r => `
+                    <div class="flex items-start gap-2.5 text-xs">
+                      <span class="mt-0.5 w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${r.done ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-400'}">
+                        <i data-lucide="${r.done ? 'check' : 'clock'}" class="w-3 h-3"></i>
+                      </span>
+                      <div>
+                        <span class="font-semibold ${r.done ? 'text-emerald-700' : 'text-slate-700'}">${escapeHtml(r.stage)}:</span>
+                        <span class="text-slate-600"> ${escapeHtml(r.title)}</span>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderProjectsPage(container) {
+        const q = state.projectSearch.trim().toLowerCase();
+        const pf = state.projectFilterPlatform;
+        const filtered = state.projects.filter(p => {
+          const matchesQ = !q || p.title.toLowerCase().includes(q) || p.prompt.toLowerCase().includes(q) || p.language.toLowerCase().includes(q);
+          const matchesP = pf === 'All' || p.platform === pf;
+          return matchesQ && matchesP;
+        });
+
+        container.innerHTML = `
+          <div class="space-y-5 animate-fade-up">
+            <div class="bg-white border border-slate-200 rounded-2xl p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+              <div class="relative flex-1">
+                <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                <input id="proj-search-input" type="text" value="${escapeHtml(state.projectSearch)}" placeholder="Search projects by title, prompt, or language..." class="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              </div>
+              <div class="flex items-center gap-2">
+                <select id="proj-platform-filter" class="px-3 py-2 rounded-xl border border-slate-300 text-sm bg-white">
+                  <option ${pf === 'All' ? 'selected' : ''}>All</option>
+                  <option ${pf === 'Instagram Reels' ? 'selected' : ''}>Instagram Reels</option>
+                  <option ${pf === 'YouTube Shorts' ? 'selected' : ''}>YouTube Shorts</option>
+                  <option ${pf === 'YouTube Video' ? 'selected' : ''}>YouTube Video</option>
+                  <option ${pf === 'LinkedIn Video' ? 'selected' : ''}>LinkedIn Video</option>
+                </select>
+                <button type="button" id="proj-page-new-btn" class="px-4 py-2 rounded-xl text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white shrink-0">+ New Draft</button>
+              </div>
+            </div>
+
+            ${filtered.length === 0 ? `
+              <div class="bg-white border border-slate-200 rounded-2xl p-10 text-center">
+                <p class="text-slate-600 font-medium">No projects match your filter.</p>
+                <button type="button" id="reset-proj-filters" class="mt-3 px-4 py-2 rounded-xl text-sm font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700">Reset Filters</button>
+              </div>
+            ` : `
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                ${filtered.map(p => `
+                  <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between hover:border-blue-300 transition-colors">
+                    <div>
+                      <div class="flex items-start justify-between gap-2">
+                        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-100">${escapeHtml(p.platform)}</span>
+                        <button type="button" data-star-id="${p.id}" aria-label="Toggle favorite" class="star-project-btn p-1 rounded-lg hover:bg-slate-100 ${p.starred ? 'text-amber-500' : 'text-slate-300'}">
+                          <i data-lucide="star" class="w-4 h-4 ${p.starred ? 'fill-amber-400' : ''}"></i>
+                        </button>
+                      </div>
+                      <h3 class="mt-3 font-bold text-slate-900 text-base">${escapeHtml(p.title)}</h3>
+                      <p class="mt-1.5 text-xs text-slate-600 line-clamp-2">${escapeHtml(p.prompt)}</p>
+                      <div class="mt-3 flex flex-wrap gap-1.5 text-[11px] text-slate-600">
+                        <span class="px-2 py-0.5 rounded-md bg-slate-100">${escapeHtml(p.language)}</span>
+                        <span class="px-2 py-0.5 rounded-md bg-slate-100">${escapeHtml(p.duration)}</span>
+                        <span class="px-2 py-0.5 rounded-md bg-purple-50 text-purple-700">${escapeHtml(p.status)}</span>
+                      </div>
+                    </div>
+                    <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                      <button type="button" data-inspect-id="${p.id}" class="inspect-project-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white">Inspect Plan</button>
+                      <div class="flex items-center gap-1">
+                        <button type="button" data-dup-id="${p.id}" title="Duplicate" class="dup-project-btn p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100">
+                          <i data-lucide="copy" class="w-4 h-4"></i>
+                        </button>
+                        <button type="button" data-del-id="${p.id}" title="Delete" class="del-project-btn p-1.5 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-rose-50">
+                          <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            `}
+          </div>
+        `;
+      }
+
+      function renderCalendarPage(container) {
+        const sorted = state.projects.slice().sort((a, b) => (a.scheduledDate || '9999').localeCompare(b.scheduledDate || '9999'));
+        container.innerHTML = `
+          <div class="space-y-6 animate-fade-up">
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                <div>
+                  <h2 class="text-lg font-bold text-slate-900">Content Calendar (November 2026)</h2>
+                  <p class="text-xs text-slate-500">Update target shoot or publish dates for your sample projects.</p>
+                </div>
+                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700">${sorted.length} Active Projects</span>
+              </div>
+              <div class="space-y-3">
+                ${sorted.map(p => `
+                  <div class="border border-slate-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="min-w-0">
+                      <div class="font-semibold text-slate-900 text-sm">${escapeHtml(p.title)}</div>
+                      <div class="text-xs text-slate-500 mt-0.5">${escapeHtml(p.platform)} • ${escapeHtml(p.language)} • ${escapeHtml(p.duration)}</div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                      <input type="date" data-cal-id="${p.id}" value="${escapeHtml(p.scheduledDate || '')}" class="cal-date-input px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-medium text-slate-700" />
+                      <button type="button" data-inspect-id="${p.id}" class="inspect-project-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-700">Open</button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderSettingsPage(container) {
+        container.innerHTML = `
+          <div class="max-w-2xl space-y-6 animate-fade-up">
+            <form id="settings-form" class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
+              <div>
+                <h2 class="text-lg font-bold text-slate-900">Creator Profile &amp; Demo Preferences</h2>
+                <p class="text-xs text-slate-500">Changes update your Stage 1 demo workspace immediately.</p>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="set-name" class="block text-xs font-semibold text-slate-700 mb-1">Display Name</label>
+                  <input id="set-name" type="text" required value="${escapeHtml(state.user.name)}" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm" />
+                </div>
+                <div>
+                  <label for="set-role" class="block text-xs font-semibold text-slate-700 mb-1">Creator Role</label>
+                  <select id="set-role" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white">
+                    ${['Student', 'Daily Vlogger', 'YouTube Creator', 'Instagram Creator', 'Business Owner', 'Educator'].map(r => `<option ${state.user.role === r ? 'selected' : ''}>${r}</option>`).join('')}
+                  </select>
+                </div>
+                <div>
+                  <label for="set-platform" class="block text-xs font-semibold text-slate-700 mb-1">Default Platform</label>
+                  <select id="set-platform" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white">
+                    ${['Instagram Reels', 'YouTube Shorts', 'YouTube Video', 'LinkedIn Video'].map(pl => `<option ${state.user.defaultPlatform === pl ? 'selected' : ''}>${pl}</option>`).join('')}
+                  </select>
+                </div>
+                <div>
+                  <label for="set-language" class="block text-xs font-semibold text-slate-700 mb-1">Default Language</label>
+                  <select id="set-language" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm bg-white">
+                    ${LANGUAGES.map(l => `<option ${state.user.defaultLanguage === l.name ? 'selected' : ''}>${l.name}</option>`).join('')}
+                  </select>
+                </div>
+              </div>
+              <div class="pt-2 flex flex-wrap items-center justify-between gap-3">
+                <button type="button" id="reset-demo-data-btn" class="px-4 py-2 rounded-xl text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100">Reset Sample Projects</button>
+                <button type="submit" class="px-5 py-2.5 rounded-xl text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white">Save Preferences</button>
+              </div>
+            </form>
+          </div>
+        `;
+      }
+
+
+      // ==================== TITLE-TO-CONTENT AI GENERATOR ====================
+      const LANG_FLAVORS = {
+        'English': {
+          opener: (t, v) => v % 2 === 0
+            ? `Real talk — have you actually thought about ${t} lately? Because most people completely miss the real reason it matters.`
+            : `Wait, before you scroll past: here is the honest truth about ${t} that nobody explains simply.`,
+          bridge: 'And here is the part that actually makes a difference in real life:',
+          cta: 'If this made sense to you, save this video and tell me your thoughts in the comments.',
+          subNote: 'Natural conversational English — short, spoken-aloud sentences.'
+        },
+        'Hindi': {
+          opener: (t, v) => v % 2 === 0
+            ? `Sach bolun toh, ${t} ke baare mein jitna log baat karte hain, usse kahin zyada simple aur useful hai yeh.`
+            : `Ek minute ruko — ${t} ko lekar jo sabse bada confusion hai, aaj usko 60 seconds mein clear karte hain.`,
+          bridge: 'Ab sabse important baat jo aapko actually kaam aayegi:',
+          cta: 'Agar yeh helpful laga toh video save karo aur comment mein batao aapka kya view hai.',
+          subNote: 'Natural Hinglish conversational tone — avoids stiff textbook Hindi.'
+        },
+        'Telugu': {
+          opener: (t, v) => v % 2 === 0
+            ? `Nijam cheppalante, ${t} gurinchi manam chala sarlu vintam kani real-life lo idi entha use avuthundo chala mandiki teliyadu.`
+            : `Okka nimisham — ${t} gurinchi simple ga, mana daily life example tho matladukundam.`,
+          bridge: 'Ikkada meeru gurtupettukovalsina main point okkate:',
+          cta: 'Ee video meeku useful anipisthe save cheskondi, mee opinion comments lo cheppandi.',
+          subNote: 'Everyday spoken Telugu with natural English tech/topic terms.'
+        },
+        'Tamil': {
+          opener: (t, v) => v % 2 === 0
+            ? `Unmaiya sollanumna, ${t} pathi neraya per pesuranga, aana idhu namma daily life-la eppadi help pannum-nu simple-a paakalam.`
+            : `Oru nimisham — ${t} pathi irukkara confusion-a romba casual-a clear pannidalam.`,
+          bridge: 'Idhula romba mukkiyamana vishayam enna-na:',
+          cta: 'Indha video ungalukku pudichirundha save pannunga, comment-la unga karutha sollunga.',
+          subNote: 'Natural conversational Tamil with casual Tanglish flow.'
+        },
+        'Kannada': {
+          opener: (t, v) => v % 2 === 0
+            ? `Nija helbekandre, ${t} bagge tumba jana helthare, aadre idu real life-alli hege upayoga aagutte anta simple aagi nodona.`
+            : `Ondu nimisha — ${t} bagge ella confusion-na tumba easy aagi clear maadona.`,
+          bridge: 'Illi neevu gamanisabekada mukhya vishaya enandre:',
+          cta: 'Ee video ishta aadre save maadi, nimma abhipraya comment-alli tilisi.',
+          subNote: 'Friendly everyday spoken Kannada with natural code-mixing.'
+        },
+        'Malayalam': {
+          opener: (t, v) => v % 2 === 0
+            ? `Sathyam paranjal, ${t} ennathu kelkkumbo complicated aayi thonnum, pakshe real life-il ithu valare simple aanu.`
+            : `Oru minute — ${t} kurichulla ella doubt-um namukku valare casual aayi clear cheyyam.`,
+          bridge: 'Ivide ningal shraddhikkenda ettavum main point ithaanu:',
+          cta: 'Ee video ningalkku useful aayenkil save cheyyuka, comment-il abhiprayam parayuka.',
+          subNote: 'Casual spoken Malayalam with natural conversational pauses.'
+        },
+        'Marathi': {
+          opener: (t, v) => v % 2 === 0
+            ? `Khara sangaycha tar, ${t} ha vishay aikayla motha watato, pan aaplya daily life madhe to khup simple ahe.`
+            : `Ek minute thamba — ${t} baddal jo saglyat motha confusion ahe, toh aaj apan soppya bhashet samjun gheu.`,
+          bridge: 'Ata saglyat mahatvachi goshta ji tumhala nakki upyogi padel:',
+          cta: 'Ha video avadla asel tar save kara ani tumcha mat comment madhe nakki sanga.',
+          subNote: 'Warm conversational Marathi with everyday expressions.'
+        },
+        'Bengali': {
+          opener: (t, v) => v % 2 === 0
+            ? `Sotti bolte, ${t} niye onekei kotha bole, kintu real life-e eta thik koto ta kaje lage sheta cholo shohoj bhabe dekhi.`
+            : `Ek minute — ${t} niye je confusion-ta shobar moddhe thake, ajke sheta khub shohoj bhabe clear korbo.`,
+          bridge: 'Ekhane shobcheye important point-ta holo:',
+          cta: 'Video-ta bhalo lagle save kore rakho ar tomar motamot comment-e janao.',
+          subNote: 'Natural colloquial Bengali with relatable transitions.'
+        }
+      };
+
+      function buildGeneratedContentPackage(cfg) {
+        const rawTitle = (cfg.title || '').trim();
+        const topic = rawTitle.replace(/[?.!]+$/, '');
+        const flavor = LANG_FLAVORS[cfg.language] || LANG_FLAVORS['English'];
+        const v = cfg.variation || 0;
+        const isLong = cfg.duration.includes('min') || cfg.platform === 'YouTube Long Video';
+        const isTextPost = ['Instagram Post', 'LinkedIn Post', 'X Post'].includes(cfg.platform);
+
+        const hook = flavor.opener(topic, v);
+        const intro = `When people hear "${topic}", they often assume it is only for experts or people with tons of free time. In reality, starting small—just 15 minutes a day—changes how you think, solve problems, and build confidence.`;
+        const talkingPoints = [
+          `Why ${topic} matters right now for ${cfg.audience.toLowerCase()} (real-world relevance, not hype).`,
+          `A relatable everyday example: how applying one simple idea from ${topic} saves time or opens a new opportunity.`,
+          `One beginner-friendly first step you can try today without expensive tools or overwhelm.`
+        ];
+        const exampleStory = `Think about a student or creator staring at a blank screen at 10 PM, trying to figure out where to start. Instead of trying to master everything in one night, they break "${topic}" into one tiny 10-minute experiment—and that small win builds momentum.`;
+        const conclusion = `${flavor.cta}`;
+
+        const fullScript = [
+          `[HOOK - 0:00]`,
+          hook,
+          ``,
+          `[INTRO]`,
+          intro,
+          ``,
+          `[MAIN STORY & EXAMPLE]`,
+          `${flavor.bridge} ${exampleStory}`,
+          ``,
+          `[KEY TAKEAWAYS]`,
+          ...talkingPoints.map((pt, i) => `${i + 1}. ${pt}`),
+          ``,
+          `[CALL TO ACTION & OUTRO]`,
+          conclusion
+        ].join('\n');
+
+        const voiceover = `${hook} ${intro} ${exampleStory} Start with one small step today. ${conclusion}`;
+
+        const speakingGuide = [
+          {
+            line: hook,
+            how: `Look directly into the camera lens. Keep your shoulders relaxed (${cfg.tone}).`,
+            pause: 'Pause 0.6s right after the opening phrase.',
+            emphasis: topic.split(' ').slice(0, 3).join(' '),
+            expression: 'Curious, raised eyebrows, slight lean forward',
+            speed: 'Medium-brisk (natural energy)'
+          },
+          {
+            line: intro,
+            how: 'Speak like you are explaining this to a friend over coffee—no presenter voice.',
+            pause: 'Short breath after "In reality".',
+            emphasis: 'starting small, 15 minutes',
+            expression: 'Warm, reassuring nod',
+            speed: 'Steady conversational pace'
+          },
+          {
+            line: exampleStory,
+            how: 'Use hand gestures naturally to show "blank screen" vs "small win".',
+            pause: 'Beat before "and that small win".',
+            emphasis: 'one tiny 10-minute experiment',
+            expression: 'Relatable half-smile',
+            speed: 'Slightly slower on the key takeaway'
+          },
+          {
+            line: conclusion,
+            how: 'Hold eye contact for 1 second after finishing the last word.',
+            pause: 'None—end cleanly.',
+            emphasis: 'save this video, comments',
+            expression: 'Friendly, open smile',
+            speed: 'Clear and upbeat'
+          }
+        ];
+
+        const scenes = isLong ? [
+          { num: 1, time: '0:00–0:20', shot: 'Medium Close-Up (Eye-Level)', camera: 'Tripod or desk mount, natural window light from 45°', line: hook, onScreen: topic.toUpperCase(), broll: 'Quick 2-second montage of real-world moments related to the topic', visualPrompt: `Cinematic medium close-up of a young creator speaking warmly in a modern study room, soft window light, shallow depth of field` },
+          { num: 2, time: '0:20–1:15', shot: 'Over-the-Shoulder + B-Roll Cutaway', camera: 'Handheld or 2nd angle from side', line: intro, onScreen: 'Why it matters now', broll: 'Notebook, laptop screen, or campus/workspace clips', visualPrompt: `Over-the-shoulder shot of a student working on a laptop with warm desk lamp lighting, natural authentic atmosphere` },
+          { num: 3, time: '1:15–2:30', shot: 'Wide / Storytelling Angle', camera: 'Slightly wider frame showing environment', line: exampleStory, onScreen: '15 mins/day > 5 hrs once a month', broll: 'Close-up of hands writing notes or coffee cup', visualPrompt: `Warm lifestyle shot of a creator sketching ideas in a notebook at a sunlit table` },
+          { num: 4, time: '2:30–3:15', shot: 'Tight Selfie / Direct-to-Lens', camera: 'Eye-level, clean uncluttered background', line: conclusion, onScreen: 'Save & Comment 👇', broll: 'End-screen subscribe / follow graphic', visualPrompt: `Clean direct-to-camera portrait with soft blue-purple ambient accent light in background` }
+        ] : [
+          { num: 1, time: '0–6s', shot: 'Selfie / Eye-Level Close-Up', camera: 'Arm-length or tripod at eye level, face well-lit', line: hook, onScreen: topic, broll: 'None—keep face on screen for hook retention', visualPrompt: `Vertical 9:16 close-up of an expressive creator speaking naturally to camera, soft daylight` },
+          { num: 2, time: '6–22s', shot: 'Over-the-Shoulder / POV B-Roll', camera: 'Quick movement or cutaway over notebook/screen', line: intro, onScreen: 'Start with 15 mins/day', broll: 'Screen recording, desk setup, or walking POV', visualPrompt: `Vertical 9:16 POV shot of hands typing on a laptop and taking notes in a cozy room` },
+          { num: 3, time: '22–45s', shot: 'Medium Desk Shot', camera: 'Chest-up framing with clean background depth', line: exampleStory, onScreen: 'Small wins compound', broll: 'Split-screen or subtle zoom-in (105%)', visualPrompt: `Vertical 9:16 medium shot of creator gesturing naturally while explaining an idea` },
+          { num: 4, time: '45–60s', shot: 'Direct-to-Camera Outro', camera: 'Steady eye-level frame', line: conclusion, onScreen: 'Save for later ✨', broll: 'Subtle background music swell', visualPrompt: `Vertical 9:16 warm smiling outro shot with subtle depth-of-field background` }
+        ];
+
+        const captions = [
+          { label: 'Short & Punchy', text: `${topic} — explained the simple way. Save this for later! ✨` },
+          { label: 'Storytelling (${cfg.platform})'.replace('${cfg.platform}', cfg.platform), text: `Most people overcomplicate "${topic}". You don't need to know everything on day one—just 15 minutes of curiosity. What's one thing you're learning this week? 👇` },
+          { label: 'Discussion Starter', text: `Honest question about ${topic}: what held you back from starting sooner? Let's talk in the comments.` }
+        ];
+
+        const slugTag = topic.replace(/[^a-zA-Z0-9]+/g, '').slice(0, 22) || 'VlogSparkAI';
+        const hashtags = `#${slugTag} #${cfg.contentType.replace(/\s+/g, '')} #${cfg.language}Creator #ContentCreator #LearnAndGrow #ReelsIndia #YouTubeCreators #VlogSparkAI`;
+
+        const musicMood = cfg.tone.includes('Energetic')
+          ? 'Upbeat Indie Electronic / Modern Pop (112 BPM, Royalty-Free)'
+          : cfg.tone.includes('Warm') || cfg.tone.includes('Storytelling')
+            ? 'Warm Acoustic Guitar & Soft Piano (86 BPM, Royalty-Free)'
+            : 'Clean Minimal Lo-Fi Chill Beats (92 BPM, Royalty-Free)';
+
+        const srtPreview = scenes.map((s, idx) => `${idx + 1}\n00:00:${String(idx * 12).padStart(2, '0')},000 --> 00:00:${String((idx + 1) * 12).padStart(2, '0')},000\n${s.line}`).join('\n\n');
+
+        return {
+          title: rawTitle,
+          platform: cfg.platform,
+          language: cfg.language,
+          contentType: cfg.contentType,
+          tone: cfg.tone,
+          duration: cfg.duration,
+          audience: cfg.audience,
+          hook,
+          intro,
+          talkingPoints,
+          exampleStory,
+          conclusion,
+          fullScript,
+          voiceover,
+          speakingGuide,
+          scenes,
+          captions,
+          hashtags,
+          musicMood,
+          srtPreview,
+          langNote: flavor.subNote,
+          isTextPost
+        };
+      }
+
+      function renderCreateWithAIPage(container) {
+        const g = state.aiGen;
+        if (!g.result) {
+          g.result = buildGeneratedContentPackage(g);
+        }
+        const res = g.result;
+
+        const tabs = [
+          { id: 'script', label: '1. Complete Script' },
+          { id: 'speaking', label: '2. Speaking Guide' },
+          { id: 'scenes', label: '3. Scene Planner' },
+          { id: 'captions', label: '4. Captions' },
+          { id: 'hashtags', label: '5. Hashtags' },
+          { id: 'production', label: '6. Video Production Guide' }
+        ];
+
+        let tabContentHtml = '';
+        if (g.activeTab === 'script') {
+          tabContentHtml = g.isEditing ? `
+            <div class="space-y-3">
+              <label class="block text-xs font-semibold text-slate-600">Edit Complete Script</label>
+              <textarea id="ai-edit-script-ta" rows="12" class="w-full p-4 rounded-xl border border-slate-300 text-sm font-sans leading-relaxed focus:outline-none focus:ring-2 focus:ring-blue-500">${escapeHtml(res.fullScript)}</textarea>
+              <div class="flex justify-end gap-2">
+                <button type="button" id="ai-cancel-edit-btn" class="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200">Cancel</button>
+                <button type="button" id="ai-save-edit-btn" class="px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 text-white hover:bg-blue-500">Save Edits</button>
+              </div>
+            </div>
+          ` : `
+            <div class="space-y-4">
+              <div class="p-4 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-100">
+                <div class="text-xs font-bold uppercase tracking-wider text-blue-700">Attention-Grabbing Opening Hook</div>
+                <p class="mt-1.5 text-base font-semibold text-slate-900">${escapeHtml(res.hook)}</p>
+                <p class="mt-1 text-xs text-slate-500">${escapeHtml(res.langNote)}</p>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-4 rounded-xl border border-slate-200 bg-slate-50">
+                  <div class="text-xs font-bold uppercase text-slate-500">Introduction</div>
+                  <p class="mt-1.5 text-sm text-slate-800 leading-relaxed">${escapeHtml(res.intro)}</p>
+                </div>
+                <div class="p-4 rounded-xl border border-slate-200 bg-slate-50">
+                  <div class="text-xs font-bold uppercase text-slate-500">Relatable Example &amp; Story</div>
+                  <p class="mt-1.5 text-sm text-slate-800 leading-relaxed">${escapeHtml(res.exampleStory)}</p>
+                </div>
+              </div>
+              <div class="p-4 rounded-xl border border-slate-200 bg-white">
+                <div class="text-xs font-bold uppercase text-slate-500 mb-2">Main Talking Points</div>
+                <ul class="space-y-1.5 text-sm text-slate-800 list-disc pl-5">
+                  ${res.talkingPoints.map(pt => `<li>${escapeHtml(pt)}</li>`).join('')}
+                </ul>
+              </div>
+              <div class="p-4 rounded-xl border border-slate-200 bg-slate-900 text-slate-100">
+                <div class="text-xs font-bold uppercase text-blue-300 mb-1.5">Voice-Over &amp; Full Spoken Script</div>
+                <pre class="whitespace-pre-wrap font-sans text-sm leading-relaxed text-slate-200">${escapeHtml(res.fullScript)}</pre>
+              </div>
+            </div>
+          `;
+        } else if (g.activeTab === 'speaking') {
+          tabContentHtml = `
+            <div class="space-y-3">
+              <p class="text-xs text-slate-500">Speak naturally—use these cues as loose speaking points rather than memorizing word-for-word.</p>
+              ${res.speakingGuide.map((item, idx) => `
+                <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-blue-700">Cue ${idx + 1}</span>
+                    <span class="text-[11px] px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 font-medium">${escapeHtml(item.speed)}</span>
+                  </div>
+                  <p class="text-sm font-semibold text-slate-900">"${escapeHtml(item.line)}"</p>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700 pt-1">
+                    <div><strong>How to say it:</strong> ${escapeHtml(item.how)}</div>
+                    <div><strong>Facial expression:</strong> ${escapeHtml(item.expression)}</div>
+                    <div><strong>Natural pause:</strong> ${escapeHtml(item.pause)}</div>
+                    <div><strong>Words to emphasize:</strong> <span class="text-blue-700 font-semibold">${escapeHtml(item.emphasis)}</span></div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } else if (g.activeTab === 'scenes') {
+          tabContentHtml = `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              ${res.scenes.map(s => `
+                <div class="p-4 rounded-xl border border-slate-200 bg-white shadow-xs space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-blue-700">Scene ${s.num} • ${escapeHtml(s.shot)}</span>
+                    <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700">${escapeHtml(s.time)}</span>
+                  </div>
+                  <p class="text-sm font-medium text-slate-900">${escapeHtml(s.line)}</p>
+                  <div class="text-xs text-slate-600 space-y-1 pt-1 border-t border-slate-100">
+                    <div><strong>Camera &amp; Lighting:</strong> ${escapeHtml(s.camera)}</div>
+                    <div><strong>On-Screen Text:</strong> <span class="px-1.5 py-0.5 rounded bg-amber-50 text-amber-800 font-medium">${escapeHtml(s.onScreen)}</span></div>
+                    <div><strong>Suggested B-Roll:</strong> ${escapeHtml(s.broll)}</div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } else if (g.activeTab === 'captions') {
+          tabContentHtml = `
+            <div class="space-y-3">
+              ${res.captions.map((c, i) => `
+                <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <span class="text-xs font-bold uppercase text-purple-700">${escapeHtml(c.label)}</span>
+                    <p class="mt-1 text-sm text-slate-800">${escapeHtml(c.text)}</p>
+                  </div>
+                  <button type="button" data-copy-line="${escapeHtml(c.text)}" class="copy-line-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 shrink-0">Copy Caption</button>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } else if (g.activeTab === 'hashtags') {
+          tabContentHtml = `
+            <div class="p-5 rounded-xl border border-slate-200 bg-slate-50 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold uppercase text-blue-700">Recommended Hashtags (${escapeHtml(res.platform)})</span>
+                <button type="button" data-copy-line="${escapeHtml(res.hashtags)}" class="copy-line-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100">Copy All</button>
+              </div>
+              <p class="text-sm font-medium text-blue-800 leading-relaxed">${escapeHtml(res.hashtags)}</p>
+            </div>
+          `;
+        } else {
+          tabContentHtml = `
+            <div class="space-y-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="p-4 rounded-xl border border-slate-200 bg-slate-50">
+                  <div class="text-xs font-bold uppercase text-purple-700">Background Music Mood</div>
+                  <p class="mt-1 text-sm font-semibold text-slate-900">${escapeHtml(res.musicMood)}</p>
+                  <p class="mt-1 text-xs text-slate-500">Use royalty-free tracks only; keep music at -18dB under voice.</p>
+                </div>
+                <div class="p-4 rounded-xl border border-slate-200 bg-slate-50">
+                  <div class="text-xs font-bold uppercase text-blue-700">AI Video Generation Mode</div>
+                  <p class="mt-1 text-sm text-slate-800">Server-side Gemini &amp; video API keys are configured in the backend package. Below are ready-to-use visual prompts and SRT subtitles.</p>
+                </div>
+              </div>
+              <div class="p-4 rounded-xl border border-slate-200 bg-white space-y-2">
+                <div class="text-xs font-bold uppercase text-slate-500">Scene Visual Prompts (For B-Roll / AI Video)</div>
+                ${res.scenes.map(s => `
+                  <div class="text-xs p-2.5 rounded-lg bg-slate-50 border border-slate-100">
+                    <strong>Scene ${s.num} (${escapeHtml(s.time)}):</strong> ${escapeHtml(s.visualPrompt)}
+                  </div>
+                `).join('')}
+              </div>
+              <div class="p-4 rounded-xl border border-slate-200 bg-slate-900 text-slate-100">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold uppercase text-emerald-300">Subtitle Track (SRT Preview)</span>
+                  <button type="button" data-copy-line="${escapeHtml(res.srtPreview)}" class="copy-line-btn px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-white/10 text-white hover:bg-white/20">Copy SRT</button>
+                </div>
+                <pre class="whitespace-pre-wrap font-mono text-xs text-slate-300">${escapeHtml(res.srtPreview)}</pre>
+              </div>
+            </div>
+          `;
+        }
+
+        container.innerHTML = `
+          <div class="space-y-6 animate-fade-up">
+            <!-- Title-to-Content Input Card -->
+            <form id="ai-generator-form" class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h2 class="text-lg font-bold text-slate-900">Title-to-Content AI Director</h2>
+                  <p class="text-xs text-slate-500">Enter any video title or topic—get a natural, human-style script, speaking cues, and production guide.</p>
+                </div>
+                <span class="self-start px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Upgraded AI Studio</span>
+              </div>
+
+              <div>
+                <label for="ai-title-input" class="block text-xs font-semibold text-slate-700 mb-1.5">Enter your video title, topic, or simple idea</label>
+                <input id="ai-title-input" type="text" value="${escapeHtml(g.title)}" placeholder="e.g., Why students should learn Artificial Intelligence" class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm sm:text-base font-medium focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                ${g.error ? `<p class="mt-1.5 text-xs font-medium text-rose-600">${escapeHtml(g.error)}</p>` : ''}
+              </div>
+
+              <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                <div>
+                  <label for="ai-platform" class="block text-[11px] font-semibold text-slate-600 mb-1">Platform</label>
+                  <select id="ai-platform" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 text-xs bg-white">
+                    ${['YouTube Long Video', 'YouTube Shorts', 'Instagram Reels', 'Instagram Post', 'Facebook Video/Post', 'LinkedIn Post', 'X Post'].map(o => `<option ${g.platform === o ? 'selected' : ''}>${o}</option>`).join('')}
+                  </select>
+                </div>
+                <div>
+                  <label for="ai-language" class="block text-[11px] font-semibold text-slate-600 mb-1">Language</label>
+                  <select id="ai-language" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 text-xs bg-white">
+                    ${['English', 'Telugu', 'Tamil', 'Hindi', 'Kannada', 'Malayalam', 'Marathi', 'Bengali'].map(o => `<option ${g.language === o ? 'selected' : ''}>${o}</option>`).join('')}
+                  </select>
+                </div>
+                <div>
+                  <label for="ai-content-type" class="block text-[11px] font-semibold text-slate-600 mb-1">Content Type</label>
+                  <select id="ai-content-type" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 text-xs bg-white">
+                    ${['Educational', 'Personal Vlog', 'Motivational', 'Technology', 'Product Review', 'Tutorial', 'Storytelling'].map(o => `<option ${g.contentType === o ? 'selected' : ''}>${o}</option>`).join('')}
+                  </select>
+                </div>
+                <div>
+                  <label for="ai-tone" class="block text-[11px] font-semibold text-slate-600 mb-1">Tone &amp; Style</label>
+                  <select id="ai-tone" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 text-xs bg-white">
+                    ${['Casual & Conversational', 'Energetic & Hype', 'Warm & Storytelling', 'Clear & Educational', 'Formal & Professional'].map(o => `<option ${g.tone === o ? 'selected' : ''}>${o}</option>`).join('')}
+                  </select>
+                </div>
+                <div>
+                  <label for="ai-duration" class="block text-[11px] font-semibold text-slate-600 mb-1">Duration</label>
+                  <select id="ai-duration" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 text-xs bg-white">
+                    ${['30 sec', '45 sec', '60 sec', '3–5 min', '8–10 min'].map(o => `<option ${g.duration === o ? 'selected' : ''}>${o}</option>`).join('')}
+                  </select>
+                </div>
+                <div>
+                  <label for="ai-audience" class="block text-[11px] font-semibold text-slate-600 mb-1">Audience</label>
+                  <select id="ai-audience" class="w-full px-2.5 py-2 rounded-xl border border-slate-300 text-xs bg-white">
+                    ${['Students & Beginners', 'Daily Viewers', 'Tech Enthusiasts', 'Working Professionals', 'Small Businesses'].map(o => `<option ${g.audience === o ? 'selected' : ''}>${o}</option>`).join('')}
+                  </select>
+                </div>
+              </div>
+
+              <div class="pt-1 flex flex-wrap items-center justify-between gap-3">
+                <div class="flex flex-wrap gap-1.5 text-[11px]">
+                  <button type="button" data-quick-title="Why students should learn Artificial Intelligence" class="ai-sample-chip px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium">Why students should learn AI</button>
+                  <button type="button" data-quick-title="My honest morning routine for better focus" class="ai-sample-chip px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium">Morning focus routine</button>
+                  <button type="button" data-quick-title="Budget smartphone camera review for vloggers" class="ai-sample-chip px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium">Budget phone camera review</button>
+                </div>
+                <button type="submit" class="px-6 py-2.5 rounded-xl text-sm font-bold bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-md flex items-center gap-2">
+                  <i data-lucide="sparkles" class="w-4 h-4"></i>
+                  <span>${g.isLoading ? 'GENERATING...' : 'GENERATE MY CONTENT'}</span>
+                </button>
+              </div>
+            </form>
+
+            <!-- Output Package Card -->
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
+              <div class="px-5 py-3.5 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+                <div class="text-xs font-semibold text-slate-600">
+                  Generated Package: <span class="text-slate-900 font-bold">${escapeHtml(res.title)}</span> • ${escapeHtml(res.language)} • ${escapeHtml(res.platform)}
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <button type="button" id="ai-copy-all-btn" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 flex items-center gap-1"><i data-lucide="copy" class="w-3.5 h-3.5"></i>Copy</button>
+                  <button type="button" id="ai-edit-toggle-btn" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 flex items-center gap-1"><i data-lucide="pencil" class="w-3.5 h-3.5"></i>Edit</button>
+                  <button type="button" id="ai-regen-btn" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 flex items-center gap-1"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>Regenerate</button>
+                  <button type="button" id="ai-download-btn" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 flex items-center gap-1"><i data-lucide="download" class="w-3.5 h-3.5"></i>Download</button>
+                  <button type="button" id="ai-save-project-btn" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white flex items-center gap-1"><i data-lucide="bookmark-plus" class="w-3.5 h-3.5"></i>Save to Projects</button>
+                </div>
+              </div>
+
+              <!-- 6 Output Tabs -->
+              <div class="px-5 pt-3 border-b border-slate-200 flex flex-wrap gap-1.5 bg-white">
+                ${tabs.map(t => `
+                  <button type="button" data-ai-tab="${t.id}" class="ai-output-tab px-3.5 py-2 rounded-t-xl text-xs sm:text-sm font-semibold transition-colors ${g.activeTab === t.id ? 'bg-blue-600 text-white' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}">${escapeHtml(t.label)}</button>
+                `).join('')}
+              </div>
+
+              <div class="p-5 sm:p-6">
+                ${tabContentHtml}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderStagePreviewPage(container, meta) {
+        const proj = getSelectedProject() || DEFAULT_PROJECTS[0];
+        let bodyHtml = '';
+
+        if (meta.id === 'script-studio' || meta.id === 'subtitles') {
+          bodyHtml = `
+            <div class="space-y-3">
+              <div class="p-4 rounded-xl bg-blue-50 border border-blue-100">
+                <div class="text-xs font-semibold text-blue-700 uppercase">Opening Hook</div>
+                <p class="mt-1 text-sm font-medium text-slate-900">${escapeHtml(proj.hook)}</p>
+              </div>
+              ${proj.scenes.map(s => `
+                <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <span class="text-xs font-semibold text-slate-500">Scene ${s.num} (${escapeHtml(s.time)})</span>
+                    <p class="mt-0.5 text-sm text-slate-900">${escapeHtml(s.line)}</p>
+                  </div>
+                  <button type="button" data-copy-line="${escapeHtml(s.line)}" class="copy-line-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 shrink-0">Copy</button>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } else if (meta.id === 'recording-director' || meta.id === 'storyboard') {
+          bodyHtml = `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              ${proj.scenes.map(s => `
+                <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-1.5">
+                  <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-blue-700">Scene ${s.num} • ${escapeHtml(s.shot)}</span>
+                    <span class="text-xs text-slate-500">${escapeHtml(s.time)}</span>
+                  </div>
+                  <p class="text-xs text-slate-700"><strong>Framing &amp; Background:</strong> ${escapeHtml(s.desc)}</p>
+                  <p class="text-xs text-purple-700"><strong>Speaking Coach:</strong> ${escapeHtml(s.cue)}</p>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        } else if (meta.id === 'music-studio') {
+          bodyHtml = `
+            <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
+              <div class="text-xs font-semibold uppercase text-purple-700">Sample Track Match</div>
+              <p class="text-sm font-semibold text-slate-900">${escapeHtml(proj.music)}</p>
+              <p class="text-xs text-slate-600">Includes licensing metadata &amp; attribution check in Stage 7. Never downloads copyrighted social audio.</p>
+            </div>
+          `;
+        } else {
+          bodyHtml = `
+            <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
+              <div class="text-xs font-semibold uppercase text-blue-700">Active Sample Prompt</div>
+              <p class="text-sm font-medium text-slate-900">"${escapeHtml(proj.prompt)}"</p>
+              <p class="text-xs text-slate-600">Interactive generation controls for <strong>${escapeHtml(meta.label)}</strong> will be wired in <strong>${escapeHtml(meta.stage)}</strong>.</p>
+            </div>
+          `;
+        }
+
+        container.innerHTML = `
+          <div class="space-y-5 animate-fade-up">
+            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div class="flex items-start gap-2.5 text-xs sm:text-sm text-amber-900">
+                <i data-lucide="layers" class="w-5 h-5 text-amber-600 shrink-0 mt-0.5"></i>
+                <div>
+                  <strong>${escapeHtml(meta.label)} (${escapeHtml(meta.stage)} Pending):</strong>
+                  You are viewing a Stage 1 read-only preview populated from <em>${escapeHtml(proj.title)}</em>.
+                </div>
+              </div>
+              <select id="preview-proj-select" class="px-3 py-1.5 rounded-xl border border-amber-300 bg-white text-xs font-semibold text-slate-800">
+                ${state.projects.map(p => `<option value="${p.id}" ${p.id === proj.id ? 'selected' : ''}>${escapeHtml(p.title)}</option>`).join('')}
+              </select>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
+              <div class="flex items-center justify-between mb-4">
+                <h2 class="text-base font-bold text-slate-900">${escapeHtml(meta.label)} Preview</h2>
+                <button type="button" data-inspect-id="${proj.id}" class="inspect-project-btn text-xs font-semibold text-blue-600 hover:underline">Open Full Project Modal</button>
+              </div>
+              ${bodyHtml}
+            </div>
+          </div>
+        `;
+      }
+
+      // ==================== MODALS ====================
+      function openAuthModal(mode) {
+        const modal = document.getElementById('auth-modal');
+        const isSignup = mode === 'signup';
+        document.getElementById('auth-name-group').classList.toggle('hidden', !isSignup);
+        document.getElementById('auth-role-group').classList.toggle('hidden', !isSignup);
+        document.getElementById('auth-tab-login').className = !isSignup
+          ? 'py-2 rounded-lg text-sm font-semibold bg-white text-slate-900 shadow-xs'
+          : 'py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-slate-900';
+        document.getElementById('auth-tab-signup').className = isSignup
+          ? 'py-2 rounded-lg text-sm font-semibold bg-white text-slate-900 shadow-xs'
+          : 'py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-slate-900';
+        document.getElementById('auth-submit-btn').textContent = isSignup ? 'Create Demo Account & Enter' : 'Log In to Demo Workspace';
+        modal.classList.remove('hidden');
+      }
+
+      function openProjectDetail(id) {
+        const proj = state.projects.find(p => p.id === id);
+        if (!proj) return;
+        state.selectedProjectId = proj.id;
+        document.getElementById('pd-badges').textContent = `${proj.platform} • ${proj.language} • ${proj.duration}`;
+        document.getElementById('pd-title').textContent = proj.title;
+        document.getElementById('pd-body').innerHTML = `
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+            <div class="text-xs font-semibold uppercase text-slate-500">Original Prompt</div>
+            <p class="mt-1 text-slate-800 font-medium">"${escapeHtml(proj.prompt)}"</p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="border border-slate-200 rounded-xl p-4">
+              <div class="text-xs font-semibold uppercase text-blue-600">Concept</div>
+              <p class="mt-1 text-slate-700">${escapeHtml(proj.concept)}</p>
+            </div>
+            <div class="border border-slate-200 rounded-xl p-4">
+              <div class="text-xs font-semibold uppercase text-purple-600">Music Mood</div>
+              <p class="mt-1 text-slate-700">${escapeHtml(proj.music)}</p>
+            </div>
+          </div>
+          <div>
+            <div class="text-xs font-semibold uppercase text-slate-500 mb-2">Scene-by-Scene Breakdown</div>
+            <div class="space-y-2.5">
+              ${proj.scenes.map(s => `
+                <div class="border border-slate-200 rounded-xl p-3.5">
+                  <div class="flex items-center justify-between text-xs font-semibold text-blue-700">
+                    <span>Scene ${s.num}: ${escapeHtml(s.shot)}</span>
+                    <span>${escapeHtml(s.time)}</span>
+                  </div>
+                  <p class="mt-1 text-slate-900 font-medium">${escapeHtml(s.line)}</p>
+                  <p class="mt-1 text-xs text-slate-600"><strong>Camera:</strong> ${escapeHtml(s.desc)} | <strong>Coach:</strong> ${escapeHtml(s.cue)}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          <div class="border border-slate-200 rounded-xl p-4 bg-blue-50/50">
+            <div class="text-xs font-semibold uppercase text-blue-700">Social Caption &amp; Hashtags</div>
+            <p class="mt-1 text-slate-800">${escapeHtml(proj.caption)}</p>
+            <p class="mt-1 text-xs text-blue-600">${escapeHtml(proj.hashtags)}</p>
+          </div>
+        `;
+        document.getElementById('project-detail-modal').classList.remove('hidden');
+        refreshIcons();
+      }
+
+      // ==================== EVENT WIRING ====================
+      function bindGlobalEvents() {
+        // Mobile landing menu
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+          document.getElementById('mobile-nav-drawer').classList.toggle('hidden');
+        });
+        document.querySelectorAll('.mobile-nav-link').forEach(a => {
+          a.addEventListener('click', () => document.getElementById('mobile-nav-drawer').classList.add('hidden'));
+        });
+
+        // Auth triggers
+        ['nav-login-btn', 'mobile-login-btn'].forEach(id => {
+          document.getElementById(id).addEventListener('click', () => openAuthModal('login'));
+        });
+        ['nav-signup-btn', 'mobile-signup-btn'].forEach(id => {
+          document.getElementById(id).addEventListener('click', () => openAuthModal('signup'));
+        });
+        document.getElementById('auth-tab-login').addEventListener('click', () => openAuthModal('login'));
+        document.getElementById('auth-tab-signup').addEventListener('click', () => openAuthModal('signup'));
+        document.getElementById('close-auth-modal').addEventListener('click', () => {
+          document.getElementById('auth-modal').classList.add('hidden');
+        });
+        document.getElementById('auth-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const nameVal = document.getElementById('auth-name').value.trim();
+          const roleVal = document.getElementById('auth-role').value;
+          if (nameVal) state.user.name = `${nameVal} (Demo)`;
+          if (roleVal) state.user.role = roleVal;
+          persistState();
+          document.getElementById('auth-modal').classList.add('hidden');
+          showToast(`Signed in as ${state.user.name}`);
+          switchToDashboard('overview');
+        });
+
+        // Open Demo Dashboard buttons
+        ['nav-demo-btn', 'mobile-demo-btn', 'footer-demo-btn'].forEach(id => {
+          document.getElementById(id).addEventListener('click', () => switchToDashboard('overview'));
+        });
+        document.getElementById('sample-open-dashboard-btn').addEventListener('click', () => {
+          state.selectedProjectId = DEFAULT_PROJECTS[0].id;
+          switchToDashboard('projects');
+          openProjectDetail(DEFAULT_PROJECTS[0].id);
+        });
+        document.getElementById('hero-view-sample-btn').addEventListener('click', () => {
+          document.getElementById('sample-plan').scrollIntoView({ behavior: 'smooth' });
+        });
+        document.getElementById('hero-launch-btn').addEventListener('click', () => {
+          const promptText = document.getElementById('hero-prompt-input').value.trim();
+          if (promptText) {
+            state.aiGen.title = promptText;
+            state.aiGen.result = buildGeneratedContentPackage(state.aiGen);
+          }
+          switchToDashboard('create-ai');
+        });
+
+        // Sample tabs & language pills
+        document.getElementById('landing-sample-tabs').addEventListener('click', (e) => {
+          const btn = e.target.closest('.sample-tab-btn');
+          if (!btn) return;
+          state.landingSampleTab = btn.getAttribute('data-sample-tab');
+          renderLandingSampleTab();
+        });
+        document.getElementById('landing-language-pills').addEventListener('click', (e) => {
+          const btn = e.target.closest('.lang-pill-btn');
+          if (!btn) return;
+          state.landingLanguage = btn.getAttribute('data-lang');
+          renderLandingLanguages();
+        });
+
+        // Pricing billing toggle & plan buttons
+        document.getElementById('billing-monthly-btn').addEventListener('click', () => {
+          state.billingAnnual = false;
+          document.getElementById('billing-monthly-btn').className = 'px-4 py-1.5 rounded-lg text-sm font-medium bg-blue-600 text-white transition-colors';
+          document.getElementById('billing-annual-btn').className = 'px-4 py-1.5 rounded-lg text-sm font-medium text-slate-300 hover:text-white transition-colors';
+          document.querySelectorAll('[data-price-monthly]').forEach(el => {
+            el.textContent = el.getAttribute('data-price-monthly');
+          });
+        });
+        document.getElementById('billing-annual-btn').addEventListener('click', () => {
+          state.billingAnnual = true;
+          document.getElementById('billing-annual-btn').className = 'px-4 py-1.5 rounded-lg text-sm font-medium bg-blue-600 text-white transition-colors';
+          document.getElementById('billing-monthly-btn').className = 'px-4 py-1.5 rounded-lg text-sm font-medium text-slate-300 hover:text-white transition-colors';
+          document.querySelectorAll('[data-price-annual]').forEach(el => {
+            el.textContent = el.getAttribute('data-price-annual');
+          });
+        });
+        document.querySelectorAll('.select-plan-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            showToast(`Selected ${btn.getAttribute('data-plan')} — Demo Mode active`);
+            openAuthModal('signup');
+          });
+        });
+
+        // FAQ Accordion
+        document.getElementById('faq-accordion').addEventListener('click', (e) => {
+          const btn = e.target.closest('.faq-toggle-btn');
+          if (!btn) return;
+          const idx = btn.getAttribute('data-faq-idx');
+          const ans = document.getElementById(`faq-ans-${idx}`);
+          ans.classList.toggle('hidden');
+        });
+
+        // Dashboard Sidebar & Mobile Drawer
+        document.getElementById('open-sidebar-btn').addEventListener('click', () => {
+          document.getElementById('dashboard-sidebar').classList.remove('-translate-x-full');
+          document.getElementById('sidebar-backdrop').classList.remove('hidden');
+        });
+        const closeSidebar = () => {
+          document.getElementById('dashboard-sidebar').classList.add('-translate-x-full');
+          document.getElementById('sidebar-backdrop').classList.add('hidden');
+        };
+        document.getElementById('close-sidebar-btn').addEventListener('click', closeSidebar);
+        document.getElementById('sidebar-backdrop').addEventListener('click', closeSidebar);
+
+        document.getElementById('sidebar-nav').addEventListener('click', (e) => {
+          const btn = e.target.closest('.dash-nav-btn');
+          if (!btn) return;
+          state.activeNav = btn.getAttribute('data-nav-id');
+          closeSidebar();
+          renderDashboard();
+        });
+
+        ['sidebar-home-btn', 'back-to-landing-btn', 'banner-landing-btn'].forEach(id => {
+          document.getElementById(id).addEventListener('click', switchToLanding);
+        });
+
+        // New Project Modal
+        document.getElementById('topbar-new-project-btn').addEventListener('click', () => {
+          document.getElementById('new-project-modal').classList.remove('hidden');
+        });
+        ['close-new-project-modal', 'cancel-new-project'].forEach(id => {
+          document.getElementById(id).addEventListener('click', () => {
+            document.getElementById('new-project-modal').classList.add('hidden');
+          });
+        });
+        document.getElementById('new-project-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const title = document.getElementById('np-title').value.trim();
+          const prompt = document.getElementById('np-prompt').value.trim();
+          if (!title || !prompt) return;
+          const newProj = {
+            id: 'proj-' + Date.now(),
+            title,
+            prompt,
+            category: 'Custom',
+            platform: document.getElementById('np-platform').value,
+            language: document.getElementById('np-language').value,
+            duration: document.getElementById('np-duration').value,
+            mood: document.getElementById('np-mood').value,
+            status: 'Draft',
+            scheduledDate: '2026-11-30',
+            starred: false,
+            concept: 'Created in Stage 1 Demo Mode. Full AI production plan generation arrives in Stages 2–4.',
+            hook: '"Opening hook will be generated in Stage 3."',
+            caption: `${title} — drafted in VlogSpark AI.`,
+            hashtags: '#VlogSparkAI #Creator',
+            music: 'Matched in Stage 7 Music Studio',
+            scenes: [{ num: 1, time: '0–10s', shot: 'Selfie Shot', desc: 'Main talking scene', line: prompt, cue: 'Natural conversational pace.' }]
+          };
+          state.projects.unshift(newProj);
+          state.selectedProjectId = newProj.id;
+          persistState();
+          document.getElementById('new-project-form').reset();
+          document.getElementById('new-project-modal').classList.add('hidden');
+          showToast('New draft project saved');
+          state.activeNav = 'projects';
+          renderDashboard();
+        });
+
+        // Project Detail Modal
+        document.getElementById('close-project-detail').addEventListener('click', () => {
+          document.getElementById('project-detail-modal').classList.add('hidden');
+        });
+        document.getElementById('pd-copy-btn').addEventListener('click', () => {
+          const p = getSelectedProject();
+          if (!p) return;
+          const full = `${p.title}\n\nHook: ${p.hook}\n\nScenes:\n${p.scenes.map(s => `Scene ${s.num} (${s.time}): ${s.line}`).join('\n')}\n\nCaption: ${p.caption}\n${p.hashtags}`;
+          copyText(full);
+        });
+        document.getElementById('pd-open-script-btn').addEventListener('click', () => {
+          document.getElementById('project-detail-modal').classList.add('hidden');
+          state.activeNav = 'script-studio';
+          renderDashboard();
+        });
+
+        // Delete Modal
+        document.getElementById('cancel-delete-btn').addEventListener('click', () => {
+          state.pendingDeleteId = null;
+          document.getElementById('delete-modal').classList.add('hidden');
+        });
+        document.getElementById('confirm-delete-btn').addEventListener('click', () => {
+          if (state.pendingDeleteId) {
+            state.projects = state.projects.filter(p => p.id !== state.pendingDeleteId);
+            if (state.selectedProjectId === state.pendingDeleteId && state.projects.length > 0) {
+              state.selectedProjectId = state.projects[0].id;
+            }
+            persistState();
+            showToast('Project deleted');
+          }
+          state.pendingDeleteId = null;
+          document.getElementById('delete-modal').classList.add('hidden');
+          renderDashboard();
+        });
+
+        // Delegated Dashboard Content Events
+        const dashContent = document.getElementById('dashboard-content');
+
+        // Create with AI events
+        dashContent.addEventListener('click', (e) => {
+          const tabBtn = e.target.closest('.ai-output-tab');
+          if (tabBtn) {
+            state.aiGen.activeTab = tabBtn.getAttribute('data-ai-tab');
+            state.aiGen.isEditing = false;
+            renderDashboard();
+            return;
+          }
+          const chipBtn = e.target.closest('.ai-sample-chip');
+          if (chipBtn) {
+            state.aiGen.title = chipBtn.getAttribute('data-quick-title');
+            state.aiGen.error = '';
+            state.aiGen.result = buildGeneratedContentPackage(state.aiGen);
+            renderDashboard();
+            return;
+          }
+          if (e.target.closest('#ai-copy-all-btn')) {
+            const r = state.aiGen.result;
+            if (!r) return;
+            const txt = `${r.title} (${r.platform} • ${r.language})\n\n${r.fullScript}\n\nCaptions:\n${r.captions.map(c => '- ' + c.text).join('\n')}\n\nHashtags: ${r.hashtags}`;
+            copyText(txt);
+            return;
+          }
+          if (e.target.closest('#ai-edit-toggle-btn')) {
+            state.aiGen.activeTab = 'script';
+            state.aiGen.isEditing = !state.aiGen.isEditing;
+            renderDashboard();
+            return;
+          }
+          if (e.target.closest('#ai-cancel-edit-btn')) {
+            state.aiGen.isEditing = false;
+            renderDashboard();
+            return;
+          }
+          if (e.target.closest('#ai-save-edit-btn')) {
+            const ta = document.getElementById('ai-edit-script-ta');
+            if (ta && state.aiGen.result) {
+              state.aiGen.result.fullScript = ta.value;
+              state.aiGen.isEditing = false;
+              showToast('Script edits saved');
+              renderDashboard();
+            }
+            return;
+          }
+          if (e.target.closest('#ai-regen-btn')) {
+            state.aiGen.variation += 1;
+            state.aiGen.isEditing = false;
+            state.aiGen.result = buildGeneratedContentPackage(state.aiGen);
+            showToast('Generated fresh hook & variation');
+            renderDashboard();
+            return;
+          }
+          if (e.target.closest('#ai-download-btn')) {
+            const r = state.aiGen.result;
+            if (!r) return;
+            const content = [
+              `VLOGSPARK AI — PRODUCTION PACKAGE`,
+              `Title: ${r.title}`,
+              `Platform: ${r.platform} | Language: ${r.language} | Tone: ${r.tone} | Duration: ${r.duration}`,
+              `==================================================`,
+              `COMPLETE SCRIPT:\n${r.fullScript}`,
+              `\n==================================================`,
+              `SCENE PLANNER:`,
+              ...r.scenes.map(s => `Scene ${s.num} (${s.time}) [${s.shot}]: ${s.line}\n  Camera: ${s.camera}\n  B-Roll: ${s.broll}\n  Visual Prompt: ${s.visualPrompt}`),
+              `\n==================================================`,
+              `CAPTIONS:\n` + r.captions.map(c => `[${c.label}] ${c.text}`).join('\n'),
+              `\nHASHTAGS:\n${r.hashtags}`,
+              `\nMUSIC MOOD:\n${r.musicMood}`,
+              `\nSUBTITLES (SRT):\n${r.srtPreview}`
+            ].join('\n');
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = (r.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 32) || 'vlogspark-plan') + '.txt';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+            showToast('Downloaded production package (.txt)');
+            return;
+          }
+          if (e.target.closest('#ai-save-project-btn')) {
+            const r = state.aiGen.result;
+            if (!r) return;
+            const newId = 'proj-' + Date.now();
+            state.projects.unshift({
+              id: newId,
+              title: r.title,
+              prompt: r.title,
+              category: r.contentType,
+              platform: r.platform,
+              language: r.language,
+              duration: r.duration,
+              mood: r.tone,
+              status: 'AI Generated',
+              scheduledDate: '2026-11-29',
+              starred: false,
+              concept: r.intro,
+              hook: r.hook,
+              caption: r.captions[0].text,
+              hashtags: r.hashtags,
+              music: r.musicMood,
+              scenes: r.scenes.map(s => ({
+                num: s.num,
+                time: s.time,
+                shot: s.shot,
+                desc: `${s.camera} | B-Roll: ${s.broll}`,
+                line: s.line,
+                cue: 'Conversational delivery'
+              }))
+            });
+            state.selectedProjectId = newId;
+            persistState();
+            showToast('Saved to My Projects');
+            return;
+          }
+        });
+
+        dashContent.addEventListener('submit', (e) => {
+          if (e.target.id === 'ai-generator-form') {
+            e.preventDefault();
+            const titleVal = (document.getElementById('ai-title-input')?.value || '').trim();
+            if (titleVal.length < 3) {
+              state.aiGen.error = 'Please enter a video title or topic (at least 3 characters).';
+              renderDashboard();
+              return;
+            }
+            state.aiGen.title = titleVal;
+            state.aiGen.platform = document.getElementById('ai-platform').value;
+            state.aiGen.language = document.getElementById('ai-language').value;
+            state.aiGen.contentType = document.getElementById('ai-content-type').value;
+            state.aiGen.tone = document.getElementById('ai-tone').value;
+            state.aiGen.duration = document.getElementById('ai-duration').value;
+            state.aiGen.audience = document.getElementById('ai-audience').value;
+            state.aiGen.error = '';
+            state.aiGen.isEditing = false;
+            state.aiGen.result = buildGeneratedContentPackage(state.aiGen);
+            showToast('Generated complete content package');
+            renderDashboard();
+          }
+        });
+
+        dashContent.addEventListener('click', (e) => {
+          const quickBtn = e.target.closest('.quick-nav-btn');
+          if (quickBtn) {
+            state.activeNav = quickBtn.getAttribute('data-quick-nav');
+            renderDashboard();
+            return;
+          }
+          if (e.target.closest('#overview-new-btn') || e.target.closest('#proj-page-new-btn')) {
+            document.getElementById('new-project-modal').classList.remove('hidden');
+            return;
+          }
+          const inspectBtn = e.target.closest('.inspect-project-btn');
+          if (inspectBtn) {
+            openProjectDetail(inspectBtn.getAttribute('data-inspect-id'));
+            return;
+          }
+          const starBtn = e.target.closest('.star-project-btn');
+          if (starBtn) {
+            const id = starBtn.getAttribute('data-star-id');
+            const p = state.projects.find(x => x.id === id);
+            if (p) {
+              p.starred = !p.starred;
+              persistState();
+              renderDashboard();
+            }
+            return;
+          }
+          const dupBtn = e.target.closest('.dup-project-btn');
+          if (dupBtn) {
+            const id = dupBtn.getAttribute('data-dup-id');
+            const p = state.projects.find(x => x.id === id);
+            if (p) {
+              const copy = JSON.parse(JSON.stringify(p));
+              copy.id = 'proj-' + Date.now();
+              copy.title = p.title + ' (Copy)';
+              state.projects.unshift(copy);
+              persistState();
+              showToast('Project duplicated');
+              renderDashboard();
+            }
+            return;
+          }
+          const delBtn = e.target.closest('.del-project-btn');
+          if (delBtn) {
+            state.pendingDeleteId = delBtn.getAttribute('data-del-id');
+            document.getElementById('delete-modal').classList.remove('hidden');
+            return;
+          }
+          if (e.target.closest('#reset-proj-filters')) {
+            state.projectSearch = '';
+            state.projectFilterPlatform = 'All';
+            renderDashboard();
+            return;
+          }
+          if (e.target.closest('#reset-demo-data-btn')) {
+            state.projects = JSON.parse(JSON.stringify(DEFAULT_PROJECTS));
+            state.selectedProjectId = state.projects[0].id;
+            persistState();
+            showToast('Sample projects restored');
+            renderDashboard();
+            return;
+          }
+          const copyLineBtn = e.target.closest('.copy-line-btn');
+          if (copyLineBtn) {
+            copyText(copyLineBtn.getAttribute('data-copy-line'));
+          }
+        });
+
+        dashContent.addEventListener('input', (e) => {
+          if (e.target.id === 'proj-search-input') {
+            state.projectSearch = e.target.value;
+            renderDashboard();
+            const inp = document.getElementById('proj-search-input');
+            if (inp) {
+              inp.focus();
+              inp.setSelectionRange(inp.value.length, inp.value.length);
+            }
+          }
+        });
+
+        dashContent.addEventListener('change', (e) => {
+          if (e.target.id === 'proj-platform-filter') {
+            state.projectFilterPlatform = e.target.value;
+            renderDashboard();
+          } else if (e.target.id === 'preview-proj-select') {
+            state.selectedProjectId = e.target.value;
+            persistState();
+            renderDashboard();
+          } else if (e.target.classList.contains('cal-date-input')) {
+            const id = e.target.getAttribute('data-cal-id');
+            const p = state.projects.find(x => x.id === id);
+            if (p) {
+              p.scheduledDate = e.target.value;
+              persistState();
+              showToast('Schedule date updated');
+            }
+          }
+        });
+
+        dashContent.addEventListener('submit', (e) => {
+          if (e.target.id === 'settings-form') {
+            e.preventDefault();
+            state.user.name = document.getElementById('set-name').value.trim() || 'Aarav (Demo)';
+            state.user.role = document.getElementById('set-role').value;
+            state.user.defaultPlatform = document.getElementById('set-platform').value;
+            state.user.defaultLanguage = document.getElementById('set-language').value;
+            persistState();
+            showToast('Preferences saved');
+            renderDashboard();
+          }
+        });
+      }
+
+      // ==================== INIT ====================
+      renderLandingSampleTab();
+      renderLandingLanguages();
+      renderFaq();
+      bindGlobalEvents();
+      refreshIcons();
+    })();
+  </script>
+</body>
+</html>
